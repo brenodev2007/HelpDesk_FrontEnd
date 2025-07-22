@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Header } from "../components/Header";
 import { ProfileInfo } from "../components/ProfileInfo";
 import { EditProfileForm } from "../components/EditProfileForm";
-import { useAuth } from "../hooks/useAuth"; // seu hook para pegar o contexto
+import { useAuth } from "../hooks/useAuth";
 import { User } from "../types/User";
 
 export const Profile: React.FC = () => {

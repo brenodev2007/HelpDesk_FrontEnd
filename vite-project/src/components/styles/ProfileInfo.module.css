@@ -1,0 +1,36 @@
+.container {
+  background-color: #0d1b2a;
+  color: #e0e1dd;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  margin: 2rem auto;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.container:hover {
+  transform: scale(1.02);
+}
+
+.avatar {
+  border-radius: 50%;
+  border: 3px solid #415a77;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.name {
+  font-size: 1.5rem;
+  color: #e0e1dd;
+  margin-bottom: 0.5rem;
+}
+
+.info {
+  font-size: 1rem;
+  color: #aebbc1;
+  margin: 0.25rem 0;
+}
