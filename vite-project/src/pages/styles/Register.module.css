@@ -1,0 +1,78 @@
+.form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.form h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.form p {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.fundo_login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("../../assets/login-backgorund.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fundo_form {
+  background-color: white;
+  padding-top: 1rem;
+  margin-left: 60rem;
+  margin-top: 1rem;
+  border-top-left-radius: 1rem;
+  width: 50%;
+  height: 96%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  margin-bottom: 10rem;
+  transition: 0.5s;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .fundo_login {
+    padding: 0;
+    background-position: center;
+  }
+
+  .fundo_form {
+    width: 90%;
+    height: 90%;
+    margin: 0;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+
+  .logo {
+    margin-bottom: 2rem;
+    width: 80%;
+  }
+
+  .form {
+    width: 80%;
+    max-width: none;
+    padding: 1.5rem;
+  }
+}
