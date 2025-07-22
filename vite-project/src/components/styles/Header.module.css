@@ -1,0 +1,85 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.75rem 3rem;
+  color: #e6ecf3;
+  box-shadow: 0 4px 12px rgba(14, 30, 37, 0.15);
+  border-radius: 16px;
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+  letter-spacing: 0.03em;
+  will-change: opacity, transform;
+  animation: fadeSlideIn 0.8s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header img {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+  animation: imgFadeIn 1s ease forwards;
+  opacity: 0;
+}
+
+@keyframes imgFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.1;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  flex-grow: 1; /* ocupa o espaço entre logo e botão */
+  animation: titlePulse 3s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+  50% {
+    opacity: 0.85;
+    text-shadow: 0 2px 8px rgba(59, 130, 246, 0.6);
+  }
+}
+
+.homeButton {
+  margin-left: auto;
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  border: 2px solid #e6ecf3;
+  border-radius: 12px;
+  color: #e6ecf3;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
+}
+
+.homeButton:hover {
+  background-color: #e6ecf3;
+  color: #1e40af;
+}

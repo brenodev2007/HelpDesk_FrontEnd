@@ -4,6 +4,7 @@ import { ProfileInfo } from "../components/ProfileInfo";
 import { EditProfileForm } from "../components/EditProfileForm";
 import { useAuth } from "../hooks/useAuth";
 import { User } from "../types/User";
+import styles from "./styles/Profile.module.css";
 
 export const Profile: React.FC = () => {
   const { user, logout, loading } = useAuth();
@@ -19,22 +20,31 @@ export const Profile: React.FC = () => {
 
   const handleSave = (updatedUser: User) => {
     console.log("Salvando usuário atualizado:", updatedUser);
-
     setIsEditing(false);
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <Header />
       {isEditing ? (
         <EditProfileForm user={user} onSave={handleSave} />
       ) : (
         <>
           <ProfileInfo user={user} />
-          <button onClick={() => setIsEditing(true)}>Editar Perfil</button>
-          <button onClick={logout} style={{ marginLeft: "1rem", color: "red" }}>
-            Logout
-          </button>
+          <div className={styles.actions}>
+            <button
+              className={`${styles.button} ${styles.edit}`}
+              onClick={() => setIsEditing(true)}
+            >
+              Editar Perfil
+            </button>
+            <button
+              className={`${styles.button} ${styles.logout}`}
+              onClick={logout}
+            >
+              Logout
+            </button>
+          </div>
         </>
       )}
     </div>
