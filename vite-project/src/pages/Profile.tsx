@@ -6,8 +6,12 @@ import { useAuth } from "../hooks/useAuth"; // seu hook para pegar o contexto
 import { User } from "../types/User";
 
 export const Profile: React.FC = () => {
-  const { user, logout } = useAuth(); // pega user e logout do contexto
+  const { user, logout, loading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+
+  if (loading) {
+    return <p>Carregando perfil...</p>;
+  }
 
   if (!user) {
     return <p>Você não está logado.</p>;
@@ -15,7 +19,7 @@ export const Profile: React.FC = () => {
 
   const handleSave = (updatedUser: User) => {
     console.log("Salvando usuário atualizado:", updatedUser);
-    // Aqui você pode atualizar o usuário na API e no contexto (precisa implementar)
+
     setIsEditing(false);
   };
 
@@ -28,10 +32,7 @@ export const Profile: React.FC = () => {
         <>
           <ProfileInfo user={user} />
           <button onClick={() => setIsEditing(true)}>Editar Perfil</button>
-          <button
-            onClick={logout} // chama logout do contexto
-            style={{ marginLeft: "1rem", color: "red" }}
-          >
+          <button onClick={logout} style={{ marginLeft: "1rem", color: "red" }}>
             Logout
           </button>
         </>
