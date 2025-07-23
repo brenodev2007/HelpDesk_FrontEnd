@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { Sidebar } from "../components/Sidebar";
+import styles from "./styles/CriarChamado.module.css";
 
 export const CriarChamado: React.FC = () => {
   const { user } = useAuth();
@@ -50,42 +52,45 @@ export const CriarChamado: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Criar Chamado</h2>
-      {erro && <p style={{ color: "red" }}>{erro}</p>}
-      {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="descricao">Descrição:</label>
-          <br />
-          <textarea
-            id="descricao"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            rows={4}
-            cols={40}
-            required
-          />
-        </div>
-        <div style={{ marginTop: 16 }}>
-          <label htmlFor="prioridade">Prioridade:</label>
-          <br />
-          <select
-            id="prioridade"
-            value={prioridade}
-            onChange={(e) =>
-              setPrioridade(e.target.value as "BAIXA" | "MÉDIA" | "ALTA")
-            }
-          >
-            <option value="BAIXA">Baixa</option>
-            <option value="MÉDIA">Média</option>
-            <option value="ALTA">Alta</option>
-          </select>
-        </div>
-        <button type="submit" style={{ marginTop: 16 }}>
-          Criar Chamado
-        </button>
-      </form>
+    <div className={styles.container}>
+      <Sidebar />
+      <main className={styles.mainContent}>
+        <h2>Criar Chamado</h2>
+        {erro && <p style={{ color: "red" }}>{erro}</p>}
+        {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="descricao">Descrição:</label>
+            <br />
+            <textarea
+              id="descricao"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              rows={4}
+              cols={40}
+              required
+            />
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <label htmlFor="prioridade">Prioridade:</label>
+            <br />
+            <select
+              id="prioridade"
+              value={prioridade}
+              onChange={(e) =>
+                setPrioridade(e.target.value as "BAIXA" | "MÉDIA" | "ALTA")
+              }
+            >
+              <option value="BAIXA">Baixa</option>
+              <option value="MÉDIA">Média</option>
+              <option value="ALTA">Alta</option>
+            </select>
+          </div>
+          <button type="submit" style={{ marginTop: 16 }}>
+            Criar Chamado
+          </button>
+        </form>
+      </main>
     </div>
   );
 };

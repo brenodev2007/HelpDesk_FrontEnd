@@ -27,12 +27,13 @@ export const Profile: React.FC = () => {
 
   // Função para navegar conforme a role
   const handleHomeClick = () => {
+    console.log("Role do usuário:", user.role);
     if (user.role === "TECNICO") {
       navigate("/tecnico");
     } else if (user.role === "USER" || user.role === "ADMIN") {
       navigate("/criar-chamado");
     } else {
-      navigate("/"); // fallback para página inicial
+      navigate("/");
     }
   };
 

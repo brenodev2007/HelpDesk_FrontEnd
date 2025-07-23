@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.mainContent {
+  margin-left: 200px; /* largura da sidebar */
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
