@@ -9,6 +9,7 @@ export type AuthContextType = {
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
+  setUser: (user: User) => void;
 };
 
 export const AuthContext = createContext<AuthContextType>(

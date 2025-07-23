@@ -8,8 +8,9 @@ import { User } from "../types/User";
 import styles from "./styles/Profile.module.css";
 
 export const Profile: React.FC = () => {
-  const { user, logout, loading } = useAuth();
+  const { user, logout, loading, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
 
   if (loading) {
@@ -20,14 +21,40 @@ export const Profile: React.FC = () => {
     return <p>Você não está logado.</p>;
   }
 
-  const handleSave = (updatedUser: User) => {
-    console.log("Salvando usuário atualizado:", updatedUser);
-    setIsEditing(false);
+  const handleUpload = async (file: File) => {
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("profileImage", file);
+
+      const res = await fetch("/api/upload-profile-image", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao enviar imagem");
+      }
+
+      const data = await res.json();
+
+      const updatedUser: User = {
+        ...user,
+        avatarUrl: data.user.profileImage,
+      };
+      setUser(updatedUser);
+      setIsEditing(false);
+    } catch (error) {
+      console.error(error);
+      alert("Falha ao enviar imagem de perfil.");
+    } finally {
+      setUploading(false);
+    }
   };
 
-  // Função para navegar conforme a role
   const handleHomeClick = () => {
-    console.log("Role do usuário:", user.role);
     if (user.role === "TECNICO") {
       navigate("/tecnico");
     } else if (user.role === "USER" || user.role === "ADMIN") {
@@ -41,7 +68,11 @@ export const Profile: React.FC = () => {
     <div className={styles.container}>
       <Header />
       {isEditing ? (
-        <EditProfileForm user={user} onSave={handleSave} />
+        <EditProfileForm
+          user={user}
+          onSave={handleUpload}
+          onCancel={() => setIsEditing(false)}
+        />
       ) : (
         <>
           <ProfileInfo user={user} />
@@ -49,12 +80,14 @@ export const Profile: React.FC = () => {
             <button
               className={`${styles.button} ${styles.edit}`}
               onClick={() => setIsEditing(true)}
+              disabled={uploading}
             >
-              Editar Perfil
+              Editar Foto
             </button>
             <button
               className={`${styles.button} ${styles.logout}`}
               onClick={logout}
+              disabled={uploading}
             >
               Logout
             </button>
@@ -62,10 +95,12 @@ export const Profile: React.FC = () => {
               className={`${styles.button} ${styles.home}`}
               onClick={handleHomeClick}
               style={{ marginLeft: 12 }}
+              disabled={uploading}
             >
               Home
             </button>
           </div>
+          {uploading && <p>Enviando imagem...</p>}
         </>
       )}
     </div>
