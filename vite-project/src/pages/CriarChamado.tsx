@@ -23,7 +23,6 @@ export const CriarChamado: React.FC = () => {
       navigate("/tecnico");
     }
   }, [user, navigate]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErro("");
@@ -35,11 +34,11 @@ export const CriarChamado: React.FC = () => {
     }
 
     try {
+      console.log({ descricao, prioridade });
       const response = await api.post("/clientes/criar-chamado", {
         descricao,
-        prioridade,
+        prioridade: prioridade.toUpperCase() as "BAIXA" | "MÉDIA" | "ALTA",
       });
-
       console.log(response);
 
       setMensagem("Chamado criado com sucesso!");
@@ -84,9 +83,9 @@ export const CriarChamado: React.FC = () => {
                 setPrioridade(e.target.value as "BAIXA" | "MÉDIA" | "ALTA")
               }
             >
-              <option value="BAIXA">Baixa</option>
-              <option value="MÉDIA">Média</option>
-              <option value="ALTA">Alta</option>
+              <option value="BAIXA">BAIXA</option>
+              <option value="MEDIA">MEDIA</option>
+              <option value="ALTA">ALTA</option>
             </select>
           </div>
           <button type="submit" style={{ marginTop: 16 }}>
