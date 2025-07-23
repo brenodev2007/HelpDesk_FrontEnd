@@ -7,6 +7,8 @@ import { useAuth } from "../hooks/useAuth";
 import { User } from "../types/User";
 import styles from "./styles/Profile.module.css";
 
+import api from "../services/api";
+
 export const Profile: React.FC = () => {
   const { user, logout, loading, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
@@ -28,26 +30,22 @@ export const Profile: React.FC = () => {
       const formData = new FormData();
       formData.append("profileImage", file);
 
-      const res = await fetch("/api/upload-profile-image", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
+      const res = await api.post("/clientes/uploadPerfil", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
-      if (!res.ok) {
-        throw new Error("Erro ao enviar imagem");
-      }
-
-      const data = await res.json();
+      const data = res.data;
 
       const updatedUser: User = {
         ...user,
-        avatarUrl: data.user.profileImage,
+        avatarUrl: data.user.profileImage, // ou profileImage se for esse o campo
       };
+
       setUser(updatedUser);
       setIsEditing(false);
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao enviar imagem:", error);
       alert("Falha ao enviar imagem de perfil.");
     } finally {
       setUploading(false);
