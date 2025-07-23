@@ -8,12 +8,14 @@ interface Props {
   };
   onSave: (file: File) => void;
   onCancel: () => void;
+  uploading?: boolean;
 }
 
 export const EditProfileForm: React.FC<Props> = ({
   user,
   onSave,
   onCancel,
+  uploading = false,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>(user.file || "");
@@ -47,23 +49,29 @@ export const EditProfileForm: React.FC<Props> = ({
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <label htmlFor="fileInput" className={styles.label}>
+      <label
+        htmlFor="fileInput"
+        className={styles.label}
+        style={{ cursor: uploading ? "not-allowed" : "pointer" }}
+      >
         {preview ? (
           <img
             src={preview}
             alt="Preview da imagem"
             className={styles.preview}
+            style={{ opacity: uploading ? 0.5 : 1 }}
           />
         ) : (
-          "Clique para selecionar a foto de perfil"
+          <span>Clique para selecionar a foto de perfil</span>
         )}
       </label>
       <input
         id="fileInput"
         type="file"
-        accept="image/png, image/jpeg, image/jpg"
+        accept="image/png, image/jpeg"
         onChange={handleFileChange}
         className={styles.fileInput}
+        disabled={uploading}
       />
 
       <div className={styles.actions}>
@@ -71,11 +79,16 @@ export const EditProfileForm: React.FC<Props> = ({
           type="button"
           onClick={onCancel}
           className={styles.buttonCancel}
+          disabled={uploading}
         >
           Cancelar
         </button>
-        <button type="submit" className={styles.buttonSave}>
-          Salvar
+        <button
+          type="submit"
+          className={styles.buttonSave}
+          disabled={uploading || !selectedFile}
+        >
+          {uploading ? "Enviando..." : "Salvar"}
         </button>
       </div>
     </form>

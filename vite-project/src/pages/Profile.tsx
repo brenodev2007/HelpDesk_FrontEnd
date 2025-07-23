@@ -4,9 +4,7 @@ import { Header } from "../components/Header";
 import { ProfileInfo } from "../components/ProfileInfo";
 import { EditProfileForm } from "../components/EditProfileForm";
 import { useAuth } from "../hooks/useAuth";
-import { User } from "../types/User";
 import styles from "./styles/Profile.module.css";
-
 import api from "../services/api";
 
 export const Profile: React.FC = () => {
@@ -25,30 +23,25 @@ export const Profile: React.FC = () => {
 
   const handleUpload = async (file: File) => {
     setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file); // ✅ importante
-
-      const token = localStorage.getItem("token");
-      const res = await api.patch("/clientes/uploadPerfil", formData, {
+      const response = await api.patch("/clientes/uploadPerfil", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
         },
       });
 
-      const data = res.data;
-      const updatedUser: User = {
-        ...user,
-        avatarUrl: data.user.profileImage, // ou .avatar se for isso
-      };
+      // Atualiza o usuário com o novo dado retornado do backend
+      if (response.data?.user) {
+        setUser(response.data.user);
+      }
 
-      setUser(updatedUser);
       setIsEditing(false);
-    } catch (error) {
-      console.error("Erro ao enviar imagem:", error);
-      alert("Falha ao enviar imagem de perfil.");
+    } catch (error: unknown) {
+      console.error("Erro no upload da imagem:", error);
+      alert("Erro ao enviar a imagem. Tente novamente.");
     } finally {
       setUploading(false);
     }
@@ -72,6 +65,7 @@ export const Profile: React.FC = () => {
           user={user}
           onSave={handleUpload}
           onCancel={() => setIsEditing(false)}
+          uploading={uploading}
         />
       ) : (
         <>

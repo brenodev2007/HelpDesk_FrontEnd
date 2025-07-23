@@ -1,13 +1,12 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-import { FiUser, FiList, FiLogOut } from "react-icons/fi";
+import { FiUser, FiList, FiLogOut, FiSettings } from "react-icons/fi";
 
 import styles from "./styles/Sidebar.module.css";
 
 export const Sidebar: React.FC = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -40,6 +39,21 @@ export const Sidebar: React.FC = () => {
             Meus Chamados
           </NavLink>
         </li>
+        {/* Link painel do administrador só se user.role === "ADMIN" */}
+        {user?.role === "ADMIN" && (
+          <li>
+            <NavLink
+              to="/painel-administrador"
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+              }
+            >
+              <FiSettings className={styles.icon} />
+              Painel do Administrador
+            </NavLink>
+          </li>
+        )}
+
         <li>
           <button onClick={handleLogout} className={styles.logoutButton}>
             <FiLogOut className={styles.icon} />

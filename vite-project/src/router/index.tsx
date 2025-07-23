@@ -5,12 +5,13 @@ import { Profile } from "../pages/Profile";
 import { CriarChamado } from "../pages/CriarChamado";
 import { GerarServico } from "../pages/GerarServico";
 import { useAuth } from "../context/AuthContext";
+import { AdminRoute } from "../components/AdminRoute"; // importe o componente
+import PainelAdministrador from "../pages/AdminPage"; // importe sua página admin
 
 export default function AppRoutes() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    // Pode colocar um loader aqui enquanto carrega o usuário
     return <div>Carregando...</div>;
   }
 
@@ -58,6 +59,11 @@ export default function AppRoutes() {
           )
         }
       />
+
+      {/* Rota protegida apenas para ADMIN */}
+      <Route element={<AdminRoute />}>
+        <Route path="/painel-administrador" element={<PainelAdministrador />} />
+      </Route>
 
       {/* Rota fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
