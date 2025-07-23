@@ -1,7 +1,11 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+
+import { FiUser, FiList, FiLogOut } from "react-icons/fi";
+
 import styles from "./styles/Sidebar.module.css";
+
 export const Sidebar: React.FC = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -18,9 +22,10 @@ export const Sidebar: React.FC = () => {
           <NavLink
             to="/profile"
             className={({ isActive }) =>
-              isActive ? styles.activeLink : undefined
+              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
             }
           >
+            <FiUser className={styles.icon} />
             Perfil
           </NavLink>
         </li>
@@ -28,14 +33,16 @@ export const Sidebar: React.FC = () => {
           <NavLink
             to="/meus-chamados"
             className={({ isActive }) =>
-              isActive ? styles.activeLink : undefined
+              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
             }
           >
+            <FiList className={styles.icon} />
             Meus Chamados
           </NavLink>
         </li>
         <li>
           <button onClick={handleLogout} className={styles.logoutButton}>
+            <FiLogOut className={styles.icon} />
             Logout
           </button>
         </li>
