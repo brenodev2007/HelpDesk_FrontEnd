@@ -35,10 +35,13 @@ export const CriarChamado: React.FC = () => {
     }
 
     try {
-      await api.post("/chamados", {
+      const response = await api.post("/clientes/criar-chamado", {
         descricao,
         prioridade,
       });
+
+      console.log(response);
+
       setMensagem("Chamado criado com sucesso!");
       setDescricao("");
       setPrioridade("BAIXA");
