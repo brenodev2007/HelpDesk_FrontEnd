@@ -1,28 +1,28 @@
 .form {
-  background-color: #172033; /* Azul escuro mais profundo */
-  color: #e0e7ff; /* tom suave para contraste */
+  background-color: #ffffff;
+  color: #19286d;
   border-radius: 14px;
   padding: 2.5rem 3rem;
   max-width: 420px;
   margin: 3rem auto;
-  box-shadow: 0 12px 24px rgba(23, 32, 51, 0.6);
+  box-shadow: 0 8px 20px rgba(25, 40, 109, 0.12);
   font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   user-select: none;
   transition: box-shadow 0.3s ease;
 
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* garante que inputs e botões ocupem 100% */
-  gap: 1rem; /* espaço uniforme entre os elementos */
+  align-items: stretch;
+  gap: 1rem;
 }
 
 .form:hover {
-  box-shadow: 0 16px 32px rgba(23, 32, 51, 0.8);
+  box-shadow: 0 12px 32px rgba(25, 40, 109, 0.2);
 }
 
 .form label {
   font-weight: 700;
-  color: #cbd5e1;
+  color: #19286d;
   font-size: 1.05rem;
   letter-spacing: 0.03em;
   user-select: text;
@@ -39,55 +39,54 @@
 .form input {
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  border: 1.8px solid #475569;
-  background-color: #283655;
-  color: #f8fafc;
+  border: 1.8px solid #cbd5e1;
+  background-color: #f1f5f9;
+  color: #19286d;
   font-size: 1.1rem;
   font-weight: 500;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-  width: 90%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 .form input::placeholder {
-  color: #a0aec0;
+  color: #94a3b8;
   font-style: italic;
 }
 
 .form input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 6px 3px rgba(59, 130, 246, 0.5);
-  background-color: #1e2a45;
+  border-color: #19286d;
+  box-shadow: 0 0 0 3px rgba(25, 40, 109, 0.2);
+  background-color: #ffffff;
   font-weight: 600;
 }
 
 .button {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #f8fafc;
+  background-color: #19286d;
+  color: #ffffff;
   padding: 1rem 2rem;
   border: none;
-  margin-top: 2rem;
+  margin-top: 0.5rem;
   border-radius: 12px;
   font-weight: 700;
   font-size: 1.1rem;
   cursor: pointer;
-  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.6);
-  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.15s ease;
+  box-shadow: 0 4px 12px rgba(25, 40, 109, 0.25);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
   user-select: none;
   display: block;
   width: 100%;
   text-align: center;
-  margin-top: 0.5rem;
 }
 
 .button:hover {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.8);
+  background-color: #0f1c59;
+  box-shadow: 0 6px 16px rgba(25, 40, 109, 0.4);
   transform: translateY(-2px);
 }
 
 .button:active {
   transform: translateY(0);
-  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 12px rgba(25, 40, 109, 0.2);
 }

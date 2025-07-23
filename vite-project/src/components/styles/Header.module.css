@@ -3,8 +3,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1.75rem 3rem;
-  color: #e6ecf3;
-  box-shadow: 0 4px 12px rgba(14, 30, 37, 0.15);
+  background-color: #ffffff;
+  color: #19286d;
+  box-shadow: 0 4px 12px rgba(25, 40, 109, 0.15);
   border-radius: 16px;
   font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   user-select: none;
@@ -27,7 +28,7 @@
 .header img {
   width: 48px;
   height: 48px;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.05));
   animation: imgFadeIn 1s ease forwards;
   opacity: 0;
 }
@@ -41,15 +42,15 @@
 .title {
   margin: 0;
   font-size: 2.4rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  color: #19286d;
   font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.1;
   user-select: none;
   -webkit-font-smoothing: antialiased;
-  flex-grow: 1; /* ocupa o espaço entre logo e botão */
+  flex-grow: 1;
   animation: titlePulse 3s ease-in-out infinite;
 }
 
@@ -57,11 +58,11 @@
   0%,
   100% {
     opacity: 1;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    text-shadow: 0 1px 4px rgba(25, 40, 109, 0.1);
   }
   50% {
-    opacity: 0.85;
-    text-shadow: 0 2px 8px rgba(59, 130, 246, 0.6);
+    opacity: 0.95;
+    text-shadow: 0 2px 8px rgba(25, 40, 109, 0.3);
   }
 }
 
@@ -69,9 +70,9 @@
   margin-left: auto;
   padding: 0.5rem 1.25rem;
   background: transparent;
-  border: 2px solid #e6ecf3;
+  border: 2px solid #19286d;
   border-radius: 12px;
-  color: #e6ecf3;
+  color: #19286d;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
@@ -80,6 +81,6 @@
 }
 
 .homeButton:hover {
-  background-color: #e6ecf3;
-  color: #1e40af;
+  background-color: #19286d;
+  color: #ffffff;
 }
