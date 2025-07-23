@@ -28,18 +28,20 @@ export const Profile: React.FC = () => {
 
     try {
       const formData = new FormData();
-      formData.append("profileImage", file);
+      formData.append("file", file); // ✅ importante
 
-      const res = await api.post("/clientes/uploadPerfil", formData, {
+      const token = localStorage.getItem("token");
+      const res = await api.patch("/clientes/uploadPerfil", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
-      const data = res.data;
 
+      const data = res.data;
       const updatedUser: User = {
         ...user,
-        avatarUrl: data.user.profileImage, // ou profileImage se for esse o campo
+        avatarUrl: data.user.profileImage, // ou .avatar se for isso
       };
 
       setUser(updatedUser);

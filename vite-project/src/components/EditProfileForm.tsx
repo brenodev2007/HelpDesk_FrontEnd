@@ -4,7 +4,7 @@ import styles from "./styles/EditProfileForm.module.css";
 interface Props {
   user: {
     id: string;
-    profileImage?: string;
+    file?: string;
   };
   onSave: (file: File) => void;
   onCancel: () => void;
@@ -16,11 +16,11 @@ export const EditProfileForm: React.FC<Props> = ({
   onCancel,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>(user.profileImage || "");
+  const [preview, setPreview] = useState<string>(user.file || "");
 
   useEffect(() => {
     if (!selectedFile) {
-      setPreview(user.profileImage || "");
+      setPreview(user.file || "");
       return;
     }
 
@@ -28,7 +28,7 @@ export const EditProfileForm: React.FC<Props> = ({
     setPreview(objectUrl);
 
     return () => URL.revokeObjectURL(objectUrl);
-  }, [selectedFile, user.profileImage]);
+  }, [selectedFile, user.file]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
