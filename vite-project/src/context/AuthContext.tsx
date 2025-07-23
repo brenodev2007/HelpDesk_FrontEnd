@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { User } from "../types/User";
 
 export type Role = "ADMIN" | "USER" | "TECNICO";
@@ -14,3 +14,5 @@ export type AuthContextType = {
 export const AuthContext = createContext<AuthContextType>(
   {} as AuthContextType
 );
+
+export const useAuth = () => useContext(AuthContext);

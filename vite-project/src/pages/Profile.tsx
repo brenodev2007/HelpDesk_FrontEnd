@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { ProfileInfo } from "../components/ProfileInfo";
 import { EditProfileForm } from "../components/EditProfileForm";
@@ -9,6 +10,7 @@ import styles from "./styles/Profile.module.css";
 export const Profile: React.FC = () => {
   const { user, logout, loading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
 
   if (loading) {
     return <p>Carregando perfil...</p>;
@@ -21,6 +23,17 @@ export const Profile: React.FC = () => {
   const handleSave = (updatedUser: User) => {
     console.log("Salvando usuário atualizado:", updatedUser);
     setIsEditing(false);
+  };
+
+  // Função para navegar conforme a role
+  const handleHomeClick = () => {
+    if (user.role === "TECNICO") {
+      navigate("/tecnico");
+    } else if (user.role === "USER" || user.role === "ADMIN") {
+      navigate("/criar-chamado");
+    } else {
+      navigate("/"); // fallback para página inicial
+    }
   };
 
   return (
@@ -43,6 +56,13 @@ export const Profile: React.FC = () => {
               onClick={logout}
             >
               Logout
+            </button>
+            <button
+              className={`${styles.button} ${styles.home}`}
+              onClick={handleHomeClick}
+              style={{ marginLeft: 12 }}
+            >
+              Home
             </button>
           </div>
         </>
