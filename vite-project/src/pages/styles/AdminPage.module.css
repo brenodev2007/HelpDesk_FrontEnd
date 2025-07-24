@@ -85,6 +85,16 @@
   transition: background-color 0.2s ease;
 }
 
+.listItem button {
+  border: none;
+  background-color: transparent;
+  color: #475569;
+}
+
+.listItem button:hover {
+  background-color: #e2e8f0;
+}
+
 .listItem:hover {
   background-color: #e2e8f0;
 }
