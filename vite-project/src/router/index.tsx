@@ -7,6 +7,7 @@ import { GerarServico } from "../pages/GerarServico";
 import { useAuth } from "../context/AuthContext";
 import { AdminRoute } from "../components/AdminRoute"; // importe o componente
 import PainelAdministrador from "../pages/AdminPage"; // importe sua página admin
+import { MeusChamados } from "../components/MeusChamados";
 
 export default function AppRoutes() {
   const { user, loading } = useAuth();
@@ -23,6 +24,8 @@ export default function AppRoutes() {
         path="/register"
         element={user ? <Navigate to="/profile" /> : <Register />}
       />
+
+      <Route path="/meus-chamados" element={<MeusChamados />} />
 
       {/* Rotas privadas */}
       <Route
