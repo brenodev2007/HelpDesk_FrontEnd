@@ -88,3 +88,77 @@
 .listItem:hover {
   background-color: #e2e8f0;
 }
+
+/* Fundo escuro por trás do modal */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6); /* azul escuro transparente */
+  z-index: 1000;
+}
+
+/* Conteúdo do modal */
+.modalContent {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  max-width: 450px;
+  width: 90%;
+  z-index: 1100;
+}
+
+.modalContent input,
+.modalContent textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  border: 1.8px solid #cbd5e1; /* cinza claro */
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+  background-color: #f9fafb; /* fundo claro suave */
+  color: #334155;
+}
+
+.modalContent input:focus,
+.modalContent textarea:focus {
+  outline: none;
+  border-color: #2563eb; /* azul vivo */
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
+  background-color: white;
+}
+
+.modalContent textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Botão fechar no topo direito */
+.modalCloseButton {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #334155;
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.modalCloseButton:hover {
+  color: #2563eb;
+}
