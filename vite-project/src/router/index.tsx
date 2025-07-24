@@ -3,7 +3,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import { Profile } from "../pages/Profile";
 import { CriarChamado } from "../pages/CriarChamado";
-import { GerarServico } from "../pages/TecnicoPage";
+import { PaginaTecnico } from "../pages/TecnicoPage";
 import { useAuth } from "../context/AuthContext";
 import { AdminRoute } from "../components/AdminRoute"; // importe o componente
 import PainelAdministrador from "../pages/AdminPage"; // importe sua página admin
@@ -53,7 +53,7 @@ export default function AppRoutes() {
         element={
           user ? (
             user.role === "TECNICO" ? (
-              <GerarServico />
+              <PaginaTecnico />
             ) : (
               <Navigate to="/criar-chamado" replace />
             )

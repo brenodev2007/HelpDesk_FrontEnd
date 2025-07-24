@@ -24,6 +24,7 @@ export const Sidebar: React.FC = () => {
   return (
     <nav className={styles.sidebar}>
       <ul>
+        {/* Perfil - visível para todos */}
         <li>
           <NavLink
             to="/profile"
@@ -35,30 +36,36 @@ export const Sidebar: React.FC = () => {
             Perfil
           </NavLink>
         </li>
-        <li>
-          <NavLink
-            to="/criar-chamado"
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-            }
-          >
-            <FiPlusCircle className={styles.icon} />
-            Criar Chamado
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/meus-chamados"
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-            }
-          >
-            <FiList className={styles.icon} />
-            Meus Chamados
-          </NavLink>
-        </li>
 
-        {/* Link painel do administrador só se user.role === "ADMIN" */}
+        {/* Criar Chamado e Meus Chamados - visível para USER e ADMIN */}
+        {user?.role !== "TECNICO" && (
+          <>
+            <li>
+              <NavLink
+                to="/criar-chamado"
+                className={({ isActive }) =>
+                  isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+                }
+              >
+                <FiPlusCircle className={styles.icon} />
+                Criar Chamado
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/meus-chamados"
+                className={({ isActive }) =>
+                  isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+                }
+              >
+                <FiList className={styles.icon} />
+                Meus Chamados
+              </NavLink>
+            </li>
+          </>
+        )}
+
+        {/* Painel do Administrador - apenas para ADMIN */}
         {user?.role === "ADMIN" && (
           <li>
             <NavLink
@@ -73,7 +80,7 @@ export const Sidebar: React.FC = () => {
           </li>
         )}
 
-        {/* Link técnico só se user.role === "TECNICO" */}
+        {/* Página do Técnico - apenas para TECNICO */}
         {user?.role === "TECNICO" && (
           <li>
             <NavLink
@@ -88,6 +95,7 @@ export const Sidebar: React.FC = () => {
           </li>
         )}
 
+        {/* Logout - visível para todos */}
         <li>
           <button onClick={handleLogout} className={styles.logoutButton}>
             <FiLogOut className={styles.icon} />
