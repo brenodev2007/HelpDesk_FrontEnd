@@ -8,6 +8,23 @@ type ModalProps = {
   onClose: () => void;
 };
 
+type Cliente = {
+  id: string;
+  email: string;
+  cargo?: string | null;
+};
+
+type Servico = {
+  id: string;
+  titulo: string;
+  descricao: string;
+  tecnico: {
+    id: string;
+    email: string;
+    cargo?: string | null;
+  };
+};
+
 const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
   return (
     <>
@@ -29,6 +46,8 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
 const PainelAdministrador: React.FC = () => {
   const [showFormTecnico, setShowFormTecnico] = useState(false);
   const [showFormServico, setShowFormServico] = useState(false);
+  const [showClientesModal, setShowClientesModal] = useState(false);
+  const [showServicosModal, setShowServicosModal] = useState(false);
 
   const [emailTecnico, setEmailTecnico] = useState("");
   const [passwordTecnico, setPasswordTecnico] = useState("");
@@ -37,6 +56,9 @@ const PainelAdministrador: React.FC = () => {
   const [tituloServico, setTituloServico] = useState("");
   const [descricaoServico, setDescricaoServico] = useState("");
   const [tecnicoIdServico, setTecnicoIdServico] = useState("");
+
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [servicos, setServicos] = useState<Servico[]>([]);
 
   const handleCriarTecnico = async (e: FormEvent) => {
     e.preventDefault();
@@ -74,6 +96,26 @@ const PainelAdministrador: React.FC = () => {
     }
   };
 
+  const fetchClientes = async () => {
+    try {
+      const response = await api.get("clientes/listar-clientes");
+      setClientes(response.data);
+      setShowClientesModal(true);
+    } catch (error) {
+      alert(error || "Erro ao buscar clientes");
+    }
+  };
+
+  const fetchServicos = async () => {
+    try {
+      const response = await api.get("clientes/listar-servicos");
+      setServicos(response.data);
+      setShowServicosModal(true);
+    } catch (error) {
+      alert(error || "Erro ao buscar serviços");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Sidebar />
@@ -96,6 +138,18 @@ const PainelAdministrador: React.FC = () => {
           >
             Criar Serviço
           </button>
+        </section>
+
+        <section className={styles.listSection}>
+          <h2 className={styles.sectionTitle}>Gerenciar Dados</h2>
+          <ul className={styles.list}>
+            <li className={styles.listItem}>
+              <button onClick={fetchClientes}>Listar Clientes</button>
+            </li>
+            <li className={styles.listItem}>
+              <button onClick={fetchServicos}>Listar Serviços</button>
+            </li>
+          </ul>
         </section>
 
         {showFormTecnico && (
@@ -173,13 +227,42 @@ const PainelAdministrador: React.FC = () => {
           </Modal>
         )}
 
-        <section className={styles.listSection}>
-          <h2 className={styles.sectionTitle}>Gerenciar Dados</h2>
-          <ul className={styles.list}>
-            <li className={styles.listItem}>Listar Clientes</li>
-            <li className={styles.listItem}>Listar Serviços (Admin)</li>
-          </ul>
-        </section>
+        {showClientesModal && (
+          <Modal onClose={() => setShowClientesModal(false)}>
+            <h3>Clientes Cadastrados</h3>
+            <ul>
+              {clientes.map((cliente) => (
+                <li key={cliente.id}>
+                  <strong>ID:</strong> {cliente.id}
+                  <br />
+                  <strong>Email:</strong> {cliente.email}
+                  <br />
+                  <strong>Cargo:</strong> {cliente.cargo || "N/A"}
+                </li>
+              ))}
+            </ul>
+          </Modal>
+        )}
+
+        {showServicosModal && (
+          <Modal onClose={() => setShowServicosModal(false)}>
+            <h3>Serviços Cadastrados</h3>
+            <ul>
+              {servicos.map((servico) => (
+                <li key={servico.id}>
+                  <strong>ID:</strong> {servico.id}
+                  <br />
+                  <strong>Título:</strong> {servico.titulo}
+                  <br />
+                  <strong>Descrição:</strong> {servico.descricao}
+                  <br />
+                  <strong>Técnico:</strong> {servico.tecnico.email} (
+                  {servico.tecnico.id})
+                </li>
+              ))}
+            </ul>
+          </Modal>
+        )}
       </main>
     </div>
   );
