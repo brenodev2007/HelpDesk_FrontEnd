@@ -37,35 +37,37 @@ export const Sidebar: React.FC = () => {
           </NavLink>
         </li>
 
-        {/* Criar Chamado e Meus Chamados - visível para USER e ADMIN */}
-        {user?.role !== "TECNICO" && (
-          <>
-            <li>
-              <NavLink
-                to="/criar-chamado"
-                className={({ isActive }) =>
-                  isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-                }
-              >
-                <FiPlusCircle className={styles.icon} />
-                Criar Chamado
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/meus-chamados"
-                className={({ isActive }) =>
-                  isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-                }
-              >
-                <FiList className={styles.icon} />
-                Meus Chamados
-              </NavLink>
-            </li>
-          </>
+        {/* Criar Chamado - somente para USER e ADMIN */}
+        {user && user.role !== "TECNICO" && (
+          <li>
+            <NavLink
+              to="/criar-chamado"
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+              }
+            >
+              <FiPlusCircle className={styles.icon} />
+              Criar Chamado
+            </NavLink>
+          </li>
         )}
 
-        {/* Painel do Administrador - apenas para ADMIN */}
+        {/* Meus Chamados - para USER, ADMIN e TECNICO */}
+        {user && (
+          <li>
+            <NavLink
+              to="/meus-chamados"
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+              }
+            >
+              <FiList className={styles.icon} />
+              Meus Chamados
+            </NavLink>
+          </li>
+        )}
+
+        {/* Painel do Administrador - apenas ADMIN */}
         {user?.role === "ADMIN" && (
           <li>
             <NavLink
@@ -80,7 +82,7 @@ export const Sidebar: React.FC = () => {
           </li>
         )}
 
-        {/* Página do Técnico - apenas para TECNICO */}
+        {/* Técnico - apenas TECNICO */}
         {user?.role === "TECNICO" && (
           <li>
             <NavLink

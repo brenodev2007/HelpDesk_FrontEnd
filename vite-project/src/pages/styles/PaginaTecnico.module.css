@@ -3,6 +3,8 @@
   height: 100vh;
   background-color: #f5f7fa;
   color: #222;
+  justify-content: center;
+  text-align: center;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -27,6 +29,8 @@
   font-size: 2rem;
   color: #0070f3;
   margin: 0;
+  margin-left: 4rem;
+  width: 100%;
 }
 
 .refreshButton {

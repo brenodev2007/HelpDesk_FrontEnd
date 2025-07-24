@@ -5,8 +5,8 @@ import { Profile } from "../pages/Profile";
 import { CriarChamado } from "../pages/CriarChamado";
 import { PaginaTecnico } from "../pages/TecnicoPage";
 import { useAuth } from "../context/AuthContext";
-import { AdminRoute } from "../components/AdminRoute"; // importe o componente
-import PainelAdministrador from "../pages/AdminPage"; // importe sua página admin
+import { AdminRoute } from "../components/AdminRoute";
+import PainelAdministrador from "../pages/AdminPage";
 import { MeusChamados } from "../components/MeusChamados";
 
 export default function AppRoutes() {
@@ -25,9 +25,12 @@ export default function AppRoutes() {
         element={user ? <Navigate to="/profile" /> : <Register />}
       />
 
-      <Route path="/meus-chamados" element={<MeusChamados />} />
+      {/* Rotas protegidas comuns para qualquer usuário logado */}
+      <Route
+        path="/meus-chamados"
+        element={user ? <MeusChamados /> : <Navigate to="/" replace />}
+      />
 
-      {/* Rotas privadas */}
       <Route
         path="/profile"
         element={user ? <Profile /> : <Navigate to="/" replace />}

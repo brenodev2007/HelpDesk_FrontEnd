@@ -21,6 +21,11 @@ interface Servico {
   titulo: string;
 }
 
+interface Tecnico {
+  id: string;
+  email: string;
+}
+
 type ModalProps = {
   chamado: Chamado;
   onClose: () => void;
@@ -28,8 +33,11 @@ type ModalProps = {
 };
 
 const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
+  const { user } = useAuth();
   const [servicos, setServicos] = useState<Servico[]>([]);
+  const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
   const [selectedServicosIds, setSelectedServicosIds] = useState<string[]>([]);
+  const [selectedTecnicoId, setSelectedTecnicoId] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingServicos, setLoadingServicos] = useState(true);
@@ -37,7 +45,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
   useEffect(() => {
     const fetchServicos = async () => {
       try {
-        const res = await api.get("/clientes/listar-servicos");
+        const res = await api.get("clientes/listar-servicos");
         setServicos(res.data);
       } catch (error) {
         alert(error || "Erro ao carregar serviços");
@@ -45,8 +53,21 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
         setLoadingServicos(false);
       }
     };
+
+    const fetchTecnicos = async () => {
+      if (user?.role === "ADMIN") {
+        try {
+          const res = await api.get("clientes/listar-tecnicos");
+          setTecnicos(res.data);
+        } catch (error) {
+          alert(error || "Erro ao carregar técnicos");
+        }
+      }
+    };
+
     fetchServicos();
-  }, []);
+    fetchTecnicos();
+  }, [user?.role]);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedServicosIds((prev) =>
@@ -62,25 +83,39 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
       return;
     }
 
-    setLoading(true);
+    if (user?.role === "ADMIN" && !selectedTecnicoId) {
+      setErrorMsg("Selecione um técnico");
+      return;
+    }
+
     setErrorMsg("");
+    setLoading(true);
 
     try {
-      // 1. Atribuir chamado ao técnico
-      await api.patch("/clientes/pegar-chamado", { chamadoId: chamado.id });
+      if (user?.role === "ADMIN") {
+        // ADMIN atribui técnico
+        await api.patch("clientes/atribuir-chamado-tecnico", {
+          chamadoId: chamado.id,
+          tecnicoId: selectedTecnicoId,
+        });
+      } else {
+        // TÉCNICO pega o chamado
+        await api.patch("clientes/pegar-chamado", {
+          chamadoId: chamado.id,
+        });
+      }
 
-      // 2. Adicionar serviços selecionados
-      await api.post("/clientes/adicionar-servicos", {
+      // Ambos adicionam serviços
+      await api.post("clientes/adicionar-servicos", {
         chamadoId: chamado.id,
         servicosIds: selectedServicosIds,
       });
 
-      alert("Chamado atribuído e serviços adicionados com sucesso!");
+      alert("Chamado processado com sucesso!");
       onSuccess();
       onClose();
     } catch (error) {
-      const message = error || "Erro ao processar ação";
-      alert(message);
+      alert(error || "Erro ao processar chamado");
     } finally {
       setLoading(false);
     }
@@ -90,37 +125,58 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
     <>
       <div className={styles.modalBackdrop} onClick={onClose} />
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <button
-          className={styles.modalCloseButton}
-          onClick={onClose}
-          aria-label="Fechar"
-        >
+        <button className={styles.modalCloseButton} onClick={onClose}>
           &times;
         </button>
 
-        <h2>Atribuir Chamado e Adicionar Serviços</h2>
+        <h2>
+          {user?.role === "ADMIN"
+            ? "Atribuir Chamado a Técnico"
+            : "Pegar Chamado"}{" "}
+          e Adicionar Serviços
+        </h2>
         <p>
           <strong>Descrição:</strong> {chamado.descricao}
         </p>
 
         <form onSubmit={handleSubmit}>
           <fieldset disabled={loading}>
-            <legend>Selecione os serviços para adicionar:</legend>
-            {loadingServicos && <p>Carregando serviços...</p>}
-            {!loadingServicos && servicos.length === 0 && (
-              <p>Nenhum serviço disponível.</p>
-            )}
-            {servicos.map((servico) => (
-              <label key={servico.id} className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  value={servico.id}
-                  checked={selectedServicosIds.includes(servico.id)}
-                  onChange={() => handleCheckboxChange(servico.id)}
-                />
-                {servico.titulo}
+            {user?.role === "ADMIN" && (
+              <label>
+                Selecione o Técnico:
+                <select
+                  value={selectedTecnicoId}
+                  onChange={(e) => setSelectedTecnicoId(e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="">-- Escolha um técnico --</option>
+                  {tecnicos.map((tec) => (
+                    <option key={tec.id} value={tec.id}>
+                      {tec.email}
+                    </option>
+                  ))}
+                </select>
               </label>
-            ))}
+            )}
+
+            <legend>Selecione os serviços:</legend>
+            {loadingServicos ? (
+              <p>Carregando serviços...</p>
+            ) : servicos.length === 0 ? (
+              <p>Nenhum serviço disponível.</p>
+            ) : (
+              servicos.map((servico) => (
+                <label key={servico.id} className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    value={servico.id}
+                    checked={selectedServicosIds.includes(servico.id)}
+                    onChange={() => handleCheckboxChange(servico.id)}
+                  />
+                  {servico.titulo}
+                </label>
+              ))
+            )}
           </fieldset>
 
           {errorMsg && <p className={styles.errorMessage}>{errorMsg}</p>}
@@ -130,7 +186,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
             disabled={loading}
             className={styles.actionButton}
           >
-            {loading ? "Salvando..." : "Confirmar"}
+            {loading ? "Processando..." : "Confirmar"}
           </button>
         </form>
       </div>
@@ -142,27 +198,19 @@ export const MeusChamados: React.FC = () => {
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [modalChamado, setModalChamado] = useState<Chamado | null>(null);
   const { user } = useAuth();
-  console.log(user);
+
+  const fetchChamados = async () => {
+    try {
+      const response = await api.get("/clientes/chamados");
+      setChamados(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar chamados:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchChamados = async () => {
-      try {
-        const response = await api.get("/clientes/chamados");
-        setChamados(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar chamados:", error);
-      }
-    };
-
     fetchChamados();
   }, []);
-
-  const refreshChamados = () => {
-    api
-      .get("/clientes/chamados")
-      .then((res) => setChamados(res.data))
-      .catch((err) => console.error(err));
-  };
 
   return (
     <div className={styles.page}>
@@ -190,7 +238,9 @@ export const MeusChamados: React.FC = () => {
                   className={styles.actionButton}
                   onClick={() => setModalChamado(chamado)}
                 >
-                  Pegar Chamado / Adicionar Serviços
+                  {user?.role === "ADMIN"
+                    ? "Atribuir Técnico / Serviços"
+                    : "Pegar Chamado / Serviços"}
                 </button>
               </li>
             ))}
@@ -201,7 +251,7 @@ export const MeusChamados: React.FC = () => {
           <Modal
             chamado={modalChamado}
             onClose={() => setModalChamado(null)}
-            onSuccess={refreshChamados}
+            onSuccess={fetchChamados}
           />
         )}
       </main>
