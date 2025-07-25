@@ -51,6 +51,7 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Rota para área do técnico - só para role TECNICO */}
       <Route
         path="/tecnico"
         element={

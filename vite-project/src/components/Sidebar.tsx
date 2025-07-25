@@ -12,7 +12,11 @@ import {
 
 import styles from "./styles/Sidebar.module.css";
 
-export const Sidebar: React.FC = () => {
+type SidebarProps = {
+  onTecnicoClick?: () => void;
+};
+
+export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -24,7 +28,7 @@ export const Sidebar: React.FC = () => {
   return (
     <nav className={styles.sidebar}>
       <ul>
-        {/* Perfil - visível para todos */}
+        {/* Perfil */}
         <li>
           <NavLink
             to="/profile"
@@ -37,7 +41,7 @@ export const Sidebar: React.FC = () => {
           </NavLink>
         </li>
 
-        {/* Criar Chamado - somente para USER e ADMIN */}
+        {/* Criar Chamado */}
         {user && user.role !== "TECNICO" && (
           <li>
             <NavLink
@@ -52,8 +56,8 @@ export const Sidebar: React.FC = () => {
           </li>
         )}
 
-        {/* Meus Chamados - para USER, ADMIN e TECNICO */}
-        {user && (
+        {/* Meus Chamados para ADMIN e USER */}
+        {(user?.role === "ADMIN" || user?.role === "USER") && (
           <li>
             <NavLink
               to="/meus-chamados"
@@ -67,7 +71,7 @@ export const Sidebar: React.FC = () => {
           </li>
         )}
 
-        {/* Painel do Administrador - apenas ADMIN */}
+        {/* Painel do Administrador */}
         {user?.role === "ADMIN" && (
           <li>
             <NavLink
@@ -82,11 +86,14 @@ export const Sidebar: React.FC = () => {
           </li>
         )}
 
-        {/* Técnico - apenas TECNICO */}
+        {/* Técnico */}
         {user?.role === "TECNICO" && (
           <li>
             <NavLink
               to="/tecnico"
+              onClick={() => {
+                if (onTecnicoClick) onTecnicoClick();
+              }}
               className={({ isActive }) =>
                 isActive ? `${styles.link} ${styles.activeLink}` : styles.link
               }
@@ -97,7 +104,7 @@ export const Sidebar: React.FC = () => {
           </li>
         )}
 
-        {/* Logout - visível para todos */}
+        {/* Logout */}
         <li>
           <button onClick={handleLogout} className={styles.logoutButton}>
             <FiLogOut className={styles.icon} />
