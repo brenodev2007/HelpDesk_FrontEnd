@@ -2,6 +2,8 @@ import React, { useState, FormEvent, ReactNode } from "react";
 import { Sidebar } from "../components/Sidebar";
 import styles from "./styles/AdminPage.module.css";
 import api from "../services/api";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 type ModalProps = {
   children: ReactNode;
@@ -29,7 +31,12 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
   return (
     <>
       <div className={styles.modalBackdrop} onClick={onClose} />
-      <div className={styles.modalContent}>
+      <motion.div
+        className={styles.modalContent}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <button
           className={styles.modalCloseButton}
           onClick={onClose}
@@ -38,7 +45,7 @@ const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
           &times;
         </button>
         {children}
-      </div>
+      </motion.div>
     </>
   );
 };
@@ -68,13 +75,16 @@ const PainelAdministrador: React.FC = () => {
         password: passwordTecnico,
         cargo: cargoTecnico || undefined,
       });
-      alert("Técnico criado com sucesso! ID: " + res.data.tecnicoId);
+
+      console.log(res.data);
+      toast.success("Técnico criado com sucesso!");
       setShowFormTecnico(false);
       setEmailTecnico("");
       setPasswordTecnico("");
       setCargoTecnico("");
     } catch (error) {
-      alert(error || "Erro ao criar técnico");
+      toast.error("Erro ao criar técnico");
+      console.log(error);
     }
   };
 
@@ -86,13 +96,16 @@ const PainelAdministrador: React.FC = () => {
         descricao: descricaoServico,
         tecnicoId: tecnicoIdServico,
       });
-      alert("Serviço criado com sucesso! ID: " + res.data.id);
+
+      console.log(res.data);
+      toast.success("Serviço criado com sucesso!");
       setShowFormServico(false);
       setTituloServico("");
       setDescricaoServico("");
       setTecnicoIdServico("");
     } catch (error) {
-      alert(error || "Erro ao criar serviço");
+      toast.error("Erro ao criar serviço");
+      console.log(error);
     }
   };
 
@@ -102,7 +115,8 @@ const PainelAdministrador: React.FC = () => {
       setClientes(response.data);
       setShowClientesModal(true);
     } catch (error) {
-      alert(error || "Erro ao buscar clientes");
+      toast.error("Erro ao buscar clientes");
+      console.log(error);
     }
   };
 
@@ -112,7 +126,23 @@ const PainelAdministrador: React.FC = () => {
       setServicos(response.data);
       setShowServicosModal(true);
     } catch (error) {
-      alert(error || "Erro ao buscar serviços");
+      toast.error("Erro ao buscar serviços");
+      console.log(error);
+    }
+  };
+
+  const removerConta = async (id: string) => {
+    const confirmar = confirm("Deseja realmente remover esta conta?");
+    if (!confirmar) return;
+    try {
+      await api.delete("clientes/remover", {
+        data: { id },
+      });
+      setClientes((prev) => prev.filter((c) => c.id !== id));
+      toast.success("Conta removida com sucesso");
+    } catch (error) {
+      toast.error("Erro ao remover conta");
+      console.log(error);
     }
   };
 
@@ -230,14 +260,21 @@ const PainelAdministrador: React.FC = () => {
         {showClientesModal && (
           <Modal onClose={() => setShowClientesModal(false)}>
             <h3>Clientes Cadastrados</h3>
-            <ul>
+            <ul className={styles.modalList}>
               {clientes.map((cliente) => (
-                <li key={cliente.id}>
+                <li key={cliente.id} className={styles.modalItem}>
                   <strong>ID:</strong> {cliente.id}
                   <br />
                   <strong>Email:</strong> {cliente.email}
                   <br />
                   <strong>Cargo:</strong> {cliente.cargo || "N/A"}
+                  <br />
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => removerConta(cliente.id)}
+                  >
+                    Remover Conta
+                  </button>
                 </li>
               ))}
             </ul>
@@ -247,9 +284,9 @@ const PainelAdministrador: React.FC = () => {
         {showServicosModal && (
           <Modal onClose={() => setShowServicosModal(false)}>
             <h3>Serviços Cadastrados</h3>
-            <ul>
+            <ul className={styles.modalList}>
               {servicos.map((servico) => (
-                <li key={servico.id}>
+                <li key={servico.id} className={styles.modalItem}>
                   <strong>ID:</strong> {servico.id}
                   <br />
                   <strong>Título:</strong> {servico.titulo}
@@ -258,6 +295,13 @@ const PainelAdministrador: React.FC = () => {
                   <br />
                   <strong>Técnico:</strong> {servico.tecnico.email} (
                   {servico.tecnico.id})
+                  <br />
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => removerConta(servico.tecnico.id)}
+                  >
+                    Remover Técnico
+                  </button>
                 </li>
               ))}
             </ul>
