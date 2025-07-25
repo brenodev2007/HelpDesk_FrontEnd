@@ -14,6 +14,9 @@ interface Chamado {
       id: string;
     };
   }[];
+  cliente?: {
+    email: string;
+  };
 }
 
 interface Servico {
@@ -45,7 +48,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
   useEffect(() => {
     const fetchServicos = async () => {
       try {
-        const res = await api.get("clientes/listar-servicos");
+        const res = await api.get("/clientes/listar-servicos");
         setServicos(res.data);
       } catch (error) {
         alert(error || "Erro ao carregar serviços");
@@ -57,10 +60,17 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
     const fetchTecnicos = async () => {
       if (user?.role === "ADMIN") {
         try {
-          const res = await api.get("clientes/listar-tecnicos");
-          setTecnicos(res.data);
+          const res = await api.get("/clientes/listar-tecnicos");
+          // Garantir que res.data seja um array antes de setar
+          if (Array.isArray(res.data)) {
+            setTecnicos(res.data);
+          } else {
+            setTecnicos([]);
+            alert("Dados inválidos recebidos para técnicos");
+          }
         } catch (error) {
           alert(error || "Erro ao carregar técnicos");
+          setTecnicos([]);
         }
       }
     };
@@ -93,20 +103,17 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
 
     try {
       if (user?.role === "ADMIN") {
-        // ADMIN atribui técnico
-        await api.patch("clientes/atribuir-chamado-tecnico", {
+        await api.patch("/clientes/atribuir-chamado-tecnico", {
           chamadoId: chamado.id,
           tecnicoId: selectedTecnicoId,
         });
       } else {
-        // TÉCNICO pega o chamado
-        await api.patch("clientes/pegar-chamado", {
+        await api.patch("/clientes/pegar-chamado", {
           chamadoId: chamado.id,
         });
       }
 
-      // Ambos adicionam serviços
-      await api.post("clientes/adicionar-servicos", {
+      await api.post("/clientes/adicionar-servicos", {
         chamadoId: chamado.id,
         servicosIds: selectedServicosIds,
       });
@@ -150,11 +157,15 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
                   className={styles.select}
                 >
                   <option value="">-- Escolha um técnico --</option>
-                  {tecnicos.map((tec) => (
-                    <option key={tec.id} value={tec.id}>
-                      {tec.email}
-                    </option>
-                  ))}
+                  {Array.isArray(tecnicos) && tecnicos.length > 0 ? (
+                    tecnicos.map((tec) => (
+                      <option key={tec.id} value={tec.id}>
+                        {tec.email}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>Nenhum técnico disponível</option>
+                  )}
                 </select>
               </label>
             )}
@@ -201,7 +212,12 @@ export const MeusChamados: React.FC = () => {
 
   const fetchChamados = async () => {
     try {
-      const response = await api.get("/clientes/chamados");
+      const rota =
+        user?.role === "ADMIN"
+          ? "/clientes/listar-todos-chamados"
+          : "/clientes/chamados";
+
+      const response = await api.get(rota);
       setChamados(response.data);
     } catch (error) {
       console.error("Erro ao buscar chamados:", error);
@@ -209,17 +225,23 @@ export const MeusChamados: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchChamados();
-  }, []);
+    if (user) fetchChamados();
+  }, [user]);
 
   return (
     <div className={styles.page}>
       <Sidebar />
       <main className={styles.content}>
-        <h1>Meus Chamados</h1>
+        <h1>
+          {user?.role === "ADMIN" ? "Todos os Chamados" : "Meus Chamados"}
+        </h1>
 
         {chamados.length === 0 ? (
-          <p>Você ainda não criou nenhum chamado.</p>
+          <p>
+            {user?.role === "ADMIN"
+              ? "Nenhum chamado encontrado no sistema."
+              : "Você ainda não criou nenhum chamado."}
+          </p>
         ) : (
           <ul className={styles.chamadoList}>
             {chamados.map((chamado) => (
@@ -234,6 +256,13 @@ export const MeusChamados: React.FC = () => {
                 <p>
                   <strong>Descrição:</strong> {chamado.descricao}
                 </p>
+
+                {user?.role === "ADMIN" && chamado.cliente?.email && (
+                  <p>
+                    <strong>Cliente:</strong> {chamado.cliente.email}
+                  </p>
+                )}
+
                 <button
                   className={styles.actionButton}
                   onClick={() => setModalChamado(chamado)}

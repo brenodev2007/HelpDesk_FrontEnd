@@ -45,7 +45,7 @@ export const PaginaTecnico: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get("/clientes/meus-chamados-tecnico");
+      const response = await api.get("clientes/meus-chamados-tecnico");
       const lista = response.data.chamados || [];
       setChamados(Array.isArray(lista) ? lista : []);
     } catch (error) {
@@ -61,7 +61,7 @@ export const PaginaTecnico: React.FC = () => {
     novoStatus: StatusType
   ) => {
     try {
-      await api.patch("/clientes/editar-status", {
+      await api.patch("clientes/editar-status", {
         chamadoServicoId,
         novoStatus,
       });

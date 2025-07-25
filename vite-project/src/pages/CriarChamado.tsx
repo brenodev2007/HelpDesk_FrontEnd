@@ -11,7 +11,7 @@ export const CriarChamado: React.FC = () => {
   const navigate = useNavigate();
 
   const [descricao, setDescricao] = useState<string>("");
-  const [prioridade, setPrioridade] = useState<"BAIXA" | "MÉDIA" | "ALTA">(
+  const [prioridade, setPrioridade] = useState<"BAIXA" | "MEDIA" | "ALTA">(
     "BAIXA"
   );
   const [erro, setErro] = useState<string>("");
@@ -80,7 +80,7 @@ export const CriarChamado: React.FC = () => {
               id="prioridade"
               value={prioridade}
               onChange={(e) =>
-                setPrioridade(e.target.value as "BAIXA" | "MÉDIA" | "ALTA")
+                setPrioridade(e.target.value as "BAIXA" | "MEDIA" | "ALTA")
               }
             >
               <option value="BAIXA">BAIXA</option>
