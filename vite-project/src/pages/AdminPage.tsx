@@ -4,6 +4,7 @@ import styles from "./styles/AdminPage.module.css";
 import api from "../services/api";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import { FaTrash, FaUserSlash } from "react-icons/fa";
 
 type ModalProps = {
   children: ReactNode;
@@ -27,28 +28,28 @@ type Servico = {
   };
 };
 
-const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
-  return (
-    <>
-      <div className={styles.modalBackdrop} onClick={onClose} />
-      <motion.div
-        className={styles.modalContent}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+const Modal: React.FC<ModalProps> = ({ children, onClose }) => (
+  <>
+    <div className={styles.modalBackdrop} onClick={onClose} />
+    <motion.div
+      className={styles.modalContent}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      role="dialog"
+      aria-modal="true"
+    >
+      <button
+        className={styles.modalCloseButton}
+        onClick={onClose}
+        aria-label="Fechar modal"
       >
-        <button
-          className={styles.modalCloseButton}
-          onClick={onClose}
-          aria-label="Fechar"
-        >
-          &times;
-        </button>
-        {children}
-      </motion.div>
-    </>
-  );
-};
+        &times;
+      </button>
+      {children}
+    </motion.div>
+  </>
+);
 
 const PainelAdministrador: React.FC = () => {
   const [showFormTecnico, setShowFormTecnico] = useState(false);
@@ -62,7 +63,6 @@ const PainelAdministrador: React.FC = () => {
 
   const [tituloServico, setTituloServico] = useState("");
   const [descricaoServico, setDescricaoServico] = useState("");
-  const [tecnicoIdServico, setTecnicoIdServico] = useState("");
 
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [servicos, setServicos] = useState<Servico[]>([]);
@@ -70,13 +70,11 @@ const PainelAdministrador: React.FC = () => {
   const handleCriarTecnico = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("clientes/criar-tecnico", {
+      await api.post("clientes/criar-tecnico", {
         email: emailTecnico,
         password: passwordTecnico,
         cargo: cargoTecnico || undefined,
       });
-
-      console.log(res.data);
       toast.success("Técnico criado com sucesso!");
       setShowFormTecnico(false);
       setEmailTecnico("");
@@ -84,28 +82,24 @@ const PainelAdministrador: React.FC = () => {
       setCargoTecnico("");
     } catch (error) {
       toast.error("Erro ao criar técnico");
-      console.log(error);
+      console.error(error);
     }
   };
 
   const handleCriarServico = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post("clientes/criar-servico", {
+      await api.post("clientes/criar-servico", {
         titulo: tituloServico,
         descricao: descricaoServico,
-        tecnicoId: tecnicoIdServico,
       });
-
-      console.log(res.data);
       toast.success("Serviço criado com sucesso!");
       setShowFormServico(false);
       setTituloServico("");
       setDescricaoServico("");
-      setTecnicoIdServico("");
     } catch (error) {
       toast.error("Erro ao criar serviço");
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -116,7 +110,7 @@ const PainelAdministrador: React.FC = () => {
       setShowClientesModal(true);
     } catch (error) {
       toast.error("Erro ao buscar clientes");
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -127,22 +121,52 @@ const PainelAdministrador: React.FC = () => {
       setShowServicosModal(true);
     } catch (error) {
       toast.error("Erro ao buscar serviços");
-      console.log(error);
+      console.error(error);
     }
   };
 
   const removerConta = async (id: string) => {
-    const confirmar = confirm("Deseja realmente remover esta conta?");
-    if (!confirmar) return;
+    if (!confirm("Deseja realmente remover esta conta?")) return;
     try {
-      await api.delete("clientes/remover", {
-        data: { id },
-      });
+      await api.delete("clientes/remover", { data: { id } });
       setClientes((prev) => prev.filter((c) => c.id !== id));
       toast.success("Conta removida com sucesso");
     } catch (error) {
       toast.error("Erro ao remover conta");
-      console.log(error);
+      console.error(error);
+    }
+  };
+
+  const removerServico = async (id: string) => {
+    if (!confirm("Deseja realmente remover este serviço?")) return;
+    try {
+      await api.delete(`clientes/remover-servico/${id}`);
+      setServicos((prev) => prev.filter((s) => s.id !== id));
+      toast.success("Serviço removido com sucesso");
+    } catch (error) {
+      toast.error("Erro ao remover serviço");
+      console.error(error);
+    }
+  };
+
+  const removerTecnicoDoServico = async (tecnicoId: string) => {
+    if (!confirm("Deseja realmente remover este técnico?")) return;
+    try {
+      await api.delete(`clientes/remover-tecnico/${tecnicoId}`);
+      setServicos((prev) =>
+        prev.map((servico) =>
+          servico.tecnico.id === tecnicoId
+            ? {
+                ...servico,
+                tecnico: { id: "", email: "Removido", cargo: null },
+              }
+            : servico
+        )
+      );
+      toast.success("Técnico removido com sucesso");
+    } catch (error) {
+      toast.error("Erro ao remover técnico");
+      console.error(error);
     }
   };
 
@@ -243,15 +267,6 @@ const PainelAdministrador: React.FC = () => {
                   required
                 />
               </label>
-              <label>
-                ID do Técnico:
-                <input
-                  type="text"
-                  value={tecnicoIdServico}
-                  onChange={(e) => setTecnicoIdServico(e.target.value)}
-                  required
-                />
-              </label>
               <button type="submit">Salvar Serviço</button>
             </form>
           </Modal>
@@ -287,21 +302,45 @@ const PainelAdministrador: React.FC = () => {
             <ul className={styles.modalList}>
               {servicos.map((servico) => (
                 <li key={servico.id} className={styles.modalItem}>
-                  <strong>ID:</strong> {servico.id}
-                  <br />
-                  <strong>Título:</strong> {servico.titulo}
-                  <br />
-                  <strong>Descrição:</strong> {servico.descricao}
-                  <br />
-                  <strong>Técnico:</strong> {servico.tecnico.email} (
-                  {servico.tecnico.id})
-                  <br />
-                  <button
-                    className={styles.deleteButton}
-                    onClick={() => removerConta(servico.tecnico.id)}
-                  >
-                    Remover Técnico
-                  </button>
+                  <div className={styles.servicoInfo}>
+                    <p>
+                      <strong>ID:</strong> {servico.id}
+                    </p>
+                    <p>
+                      <strong>Título:</strong> {servico.titulo}
+                    </p>
+                    <p>
+                      <strong>Descrição:</strong> {servico.descricao}
+                    </p>
+                    <p>
+                      <strong>Técnico:</strong>{" "}
+                      {servico.tecnico.id
+                        ? `${servico.tecnico.email} (${servico.tecnico.id})`
+                        : "Removido"}
+                    </p>
+                  </div>
+                  <div className={styles.buttonsGroup}>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => removerServico(servico.id)}
+                      aria-label={`Remover serviço ${servico.titulo}`}
+                      title="Remover Serviço"
+                    >
+                      <FaTrash />
+                    </button>
+                    {servico.tecnico.id && (
+                      <button
+                        className={styles.deleteButton}
+                        onClick={() =>
+                          removerTecnicoDoServico(servico.tecnico.id)
+                        }
+                        aria-label={`Remover técnico ${servico.tecnico.email}`}
+                        title="Remover Técnico"
+                      >
+                        <FaUserSlash />
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

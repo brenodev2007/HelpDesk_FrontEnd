@@ -5,7 +5,7 @@
   min-height: 100vh;
   background-color: #f9fafb;
   font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #1e293b;
+  color: #cbd5e1;
 }
 
 .mainContent {
@@ -13,21 +13,22 @@
   padding: 2.5rem 3rem;
   max-width: 900px;
   margin: auto;
-  background: white;
+  background: #f9fafb;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(46, 61, 163, 0.25);
 }
 
 .title {
   font-size: 2.4rem;
   font-weight: 700;
   margin-bottom: 0.3rem;
-  color: #0f172a;
+  color: #2e3da3;
+  text-transform: uppercase;
 }
 
 .subtitle {
   font-size: 1.1rem;
-  color: #475569;
+  color: #5b5e63;
   margin-bottom: 2rem;
 }
 
@@ -39,32 +40,38 @@
 
 .actionButton {
   flex: 1;
-  background-color: #2563eb; /* azul */
-  color: white;
+  background-color: #1e2024;
+  color: #ffffff;
   font-weight: 700;
   padding: 1rem 1.5rem;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   font-size: 1.1rem;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 4px 10px rgb(37 99 235 / 0.4);
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: none;
+  user-select: none;
 }
 
 .actionButton:hover {
-  background-color: #1d4ed8;
-  box-shadow: 0 6px 15px rgb(29 78 216 / 0.6);
+  background-color: #2e3da3;
+  box-shadow: 0 0 15px #2e3da3;
 }
 
+.actionButton:active {
+  transform: scale(0.97);
+}
+
+/* Section lista */
 .listSection {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #1e2024;
   padding-top: 2rem;
 }
 
 .sectionTitle {
   font-size: 1.6rem;
   font-weight: 600;
-  color: #334155;
+  color: #1e2024;
   margin-bottom: 1.2rem;
 }
 
@@ -77,175 +84,201 @@
 .listItem {
   padding: 1rem 1.5rem;
   border-radius: 8px;
-  background-color: #f1f5f9;
+  background-color: #f9fafb;
   margin-bottom: 1rem;
   font-weight: 500;
-  color: #475569;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  border: 1.5px solid transparent;
+  transition: border 0.35s ease, background-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.listItem:hover {
+  border: 1.5px solid #e3e5e8;
+  box-shadow: 0 0 12px rgba(92, 124, 250, 0.15);
 }
 
 .listItem button {
   border: none;
   background-color: transparent;
-  color: #475569;
+  color: #1e2024;
+  transition: color 0.3s ease;
 }
 
 .listItem button:hover {
-  background-color: #e2e8f0;
+  color: #5c7cfa;
 }
 
-.listItem:hover {
-  background-color: #e2e8f0;
-}
-
-/* Fundo escuro por trás do modal */
 .modalBackdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(15, 23, 42, 0.6); /* azul escuro transparente */
+  background-color: rgba(30, 32, 36, 0.35); /* mais leve */
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
-/* Conteúdo do modal */
 .modalContent {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
+  background-color: #ffffff; /* cor clara */
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  padding: 2rem;
-  max-width: 450px;
-  width: 90%;
+  box-shadow: 0 6px 24px rgba(46, 61, 163, 0.25);
+  padding: 2.5rem 3rem;
+  width: 90vw;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   z-index: 1100;
+  animation: modalFadeIn 0.35s ease forwards;
+  color: #1e2024; /* texto escuro */
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .modalContent input,
 .modalContent textarea {
   width: 100%;
-  padding: 0.6rem 0.8rem;
-  margin-top: 0.3rem;
-  margin-bottom: 1rem;
-  border-radius: 0.5rem;
-  border: 1.8px solid #cbd5e1; /* cinza claro */
+  padding: 0.7rem 1rem;
+  margin-top: 0.4rem;
+  margin-bottom: 1.25rem;
+  border-radius: 10px;
+  border: 1.5px solid #c3c9f5;
+  background-color: #f7f9ff;
+  color: #1e2024;
   font-size: 1rem;
-  font-family: inherit;
+  font-family: "Inter", sans-serif;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   box-sizing: border-box;
-  background-color: #f9fafb; /* fundo claro suave */
-  color: #334155;
+  resize: vertical;
+  min-height: 90px;
 }
 
 .modalContent input:focus,
 .modalContent textarea:focus {
   outline: none;
-  border-color: #2563eb; /* azul vivo */
-  box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
-  background-color: white;
+  background-color: #ffffff;
+  border-color: #2e3da3;
+  box-shadow: 0 0 10px rgba(46, 61, 163, 0.3);
+  color: #1e2024;
 }
 
-.modalContent textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* Botão fechar no topo direito */
-.modalCloseButton {
-  position: absolute;
-  top: 0.8rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  font-size: 2.2rem;
-  line-height: 1;
-  cursor: pointer;
-  color: #334155;
-  font-weight: 700;
-  transition: color 0.2s ease;
-}
-
-.modalCloseButton:hover {
-  color: #2563eb;
-}
-
-/* Lista dentro do modal (clientes e serviços) */
+/* Lista dentro do modal */
 .modalContent ul {
   list-style: none;
   padding: 0;
   margin-top: 1rem;
-  max-height: 300px;
+  max-height: 65vh;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2e3da3 transparent;
+}
+
+.modalContent ul::-webkit-scrollbar {
+  width: 8px;
+}
+.modalContent ul::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modalContent ul::-webkit-scrollbar-thumb {
+  background-color: #2e3da3;
+  border-radius: 6px;
 }
 
 .modalContent li {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1rem;
+  background-color: #f1f5f9;
+  border: 1.5px solid #c3c9f5;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
   margin-bottom: 1rem;
-  font-size: 0.95rem;
-  color: #334155;
-  line-height: 1.5;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  transition: background-color 0.2s ease;
+  font-size: 1rem;
+  color: #1e2024;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: text;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .modalContent li:hover {
-  background-color: #e2e8f0;
+  background-color: #e8ecf7;
+  border-color: #2e3da3;
 }
 
-.modalContent button[type="submit"] {
-  width: 100%;
-  padding: 0.9rem 1.2rem;
-  background-color: #2563eb; /* Azul vivo */
-  color: white;
-  font-size: 1.05rem;
-  font-weight: 600;
+/* Fechar botão */
+.modalCloseButton {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: transparent;
   border: none;
+  font-size: 2.4rem;
+  color: #5b5e63;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.25s ease, transform 0.15s ease;
+  user-select: none;
+  line-height: 1;
+}
+
+.modalCloseButton:hover {
+  color: #2e3da3;
+  transform: scale(1.15);
+}
+
+/* Div para info do serviço */
+.servicoInfo p {
+  margin: 0.3rem 0;
+}
+
+/* Botões na linha */
+.buttonsGroup {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Botões delete minimalistas */
+.deleteButton {
+  background-color: transparent;
+  border: 2px solid #e53e3e;
+  color: #e53e3e;
+  padding: 0.55rem 0.85rem;
+  font-size: 1.15rem;
+  font-weight: 600;
   border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.25s ease, transform 0.1s ease;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
-  margin-top: 0.5rem;
-}
-
-.modalContent button[type="submit"]:hover {
-  background-color: #1d4ed8;
-  box-shadow: 0 6px 15px rgba(29, 78, 216, 0.5);
-  transform: translateY(-2px);
-}
-
-.modalContent button[type="submit"]:active {
-  background-color: #1e40af;
-  transform: scale(0.98);
-}
-
-.deleteButton {
-  background-color: #e53e3e;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 0.75rem;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(229, 62, 62, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.15s ease;
+  box-shadow: none;
 }
 
 .deleteButton:hover {
-  background-color: #c53030;
-  transform: scale(1.03);
-  box-shadow: 0 4px 8px rgba(197, 48, 48, 0.4);
+  background-color: #e53e3e;
+  color: #1e2024;
+  box-shadow: 0 0 12px #e53e3e;
+  transform: scale(1.1);
 }
 
 .deleteButton:active {
-  transform: scale(0.97);
-  background-color: #9b2c2c;
+  transform: scale(0.95);
+  box-shadow: 0 0 8px #b43535;
 }
