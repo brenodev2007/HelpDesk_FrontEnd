@@ -238,7 +238,9 @@ const PainelAdministrador: React.FC = () => {
                   onChange={(e) => setCargoTecnico(e.target.value)}
                 />
               </label>
-              <button type="submit">Salvar Técnico</button>
+              <button type="submit" className={styles.btnEnviar}>
+                Salvar Técnico
+              </button>
             </form>
           </Modal>
         )}
@@ -267,7 +269,9 @@ const PainelAdministrador: React.FC = () => {
                   required
                 />
               </label>
-              <button type="submit">Salvar Serviço</button>
+              <button type="submit" className={styles.btnEnviar}>
+                Salvar Serviço
+              </button>
             </form>
           </Modal>
         )}
