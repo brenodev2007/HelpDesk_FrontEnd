@@ -1,4 +1,4 @@
-import React, { useEffect, useState, FormEvent } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import styles from "./styles/MeusChamados.module.css";
 import { useAuth } from "../context/AuthContext";
@@ -10,11 +10,15 @@ interface Chamado {
   descricao: string;
   chamado_servico: {
     servico: {
-      nome: string;
       id: string;
+      titulo: string;
     };
   }[];
-  cliente?: {
+  user?: {
+    email: string;
+  };
+  tecnico?: {
+    id: string;
     email: string;
   };
 }
@@ -45,13 +49,22 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingServicos, setLoadingServicos] = useState(true);
 
+  // Inicializa os selecionados com os dados do chamado
+  useEffect(() => {
+    if (chamado) {
+      const servicosIds = chamado.chamado_servico.map((cs) => cs.servico.id);
+      setSelectedServicosIds(servicosIds);
+      setSelectedTecnicoId(chamado.tecnico?.id ?? "");
+    }
+  }, [chamado]);
+
   useEffect(() => {
     const fetchServicos = async () => {
       try {
         const res = await api.get("/clientes/listar-servicos");
         setServicos(res.data);
-      } catch (error) {
-        alert(error || "Erro ao carregar serviços");
+      } catch {
+        alert("Erro ao carregar serviços");
       } finally {
         setLoadingServicos(false);
       }
@@ -61,16 +74,9 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
       if (user?.role === "ADMIN") {
         try {
           const res = await api.get("/clientes/listar-tecnicos");
-          // Garantir que res.data seja um array antes de setar
-          if (Array.isArray(res.data)) {
-            setTecnicos(res.data);
-          } else {
-            setTecnicos([]);
-            alert("Dados inválidos recebidos para técnicos");
-          }
-        } catch (error) {
-          alert(error || "Erro ao carregar técnicos");
-          setTecnicos([]);
+          if (Array.isArray(res.data)) setTecnicos(res.data);
+        } catch {
+          alert("Erro ao carregar técnicos");
         }
       }
     };
@@ -85,7 +91,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
     );
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (selectedServicosIds.length === 0) {
@@ -121,8 +127,8 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
       alert("Chamado processado com sucesso!");
       onSuccess();
       onClose();
-    } catch (error) {
-      alert(error || "Erro ao processar chamado");
+    } catch {
+      alert("Erro ao processar chamado");
     } finally {
       setLoading(false);
     }
@@ -135,12 +141,9 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
         <button className={styles.modalCloseButton} onClick={onClose}>
           &times;
         </button>
-
         <h2>
-          {user?.role === "ADMIN"
-            ? "Atribuir Chamado a Técnico"
-            : "Pegar Chamado"}{" "}
-          e Adicionar Serviços
+          {user?.role === "ADMIN" ? "Atribuir Técnico" : "Pegar Chamado"} e
+          Adicionar Serviços
         </h2>
         <p>
           <strong>Descrição:</strong> {chamado.descricao}
@@ -157,15 +160,11 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
                   className={styles.select}
                 >
                   <option value="">-- Escolha um técnico --</option>
-                  {Array.isArray(tecnicos) && tecnicos.length > 0 ? (
-                    tecnicos.map((tec) => (
-                      <option key={tec.id} value={tec.id}>
-                        {tec.email}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>Nenhum técnico disponível</option>
-                  )}
+                  {tecnicos.map((tec) => (
+                    <option key={tec.id} value={tec.id}>
+                      {tec.email}
+                    </option>
+                  ))}
                 </select>
               </label>
             )}
@@ -173,8 +172,6 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
             <legend>Selecione os serviços:</legend>
             {loadingServicos ? (
               <p>Carregando serviços...</p>
-            ) : servicos.length === 0 ? (
-              <p>Nenhum serviço disponível.</p>
             ) : (
               servicos.map((servico) => (
                 <label key={servico.id} className={styles.checkboxLabel}>
@@ -224,6 +221,22 @@ export const MeusChamados: React.FC = () => {
     }
   };
 
+  const handleRemoverChamado = async (id: string) => {
+    const confirmar = window.confirm(
+      "Tem certeza que deseja remover este chamado?"
+    );
+    if (!confirmar) return;
+
+    try {
+      await api.delete(`/clientes/remover-chamado/${id}`);
+      alert("Chamado removido com sucesso!");
+      fetchChamados();
+    } catch (error) {
+      console.error("Erro ao remover chamado:", error);
+      alert("Erro ao remover chamado.");
+    }
+  };
+
   useEffect(() => {
     if (user) fetchChamados();
   }, [user]);
@@ -243,37 +256,55 @@ export const MeusChamados: React.FC = () => {
               : "Você ainda não criou nenhum chamado."}
           </p>
         ) : (
-          <ul className={styles.chamadoList}>
-            {chamados.map((chamado) => (
-              <li key={chamado.id} className={styles.card}>
-                <h2>
-                  {chamado.chamado_servico?.[0]?.servico?.nome ??
-                    "Serviço não disponível"}
-                </h2>
-                <p>
-                  <strong>Prioridade:</strong> {chamado.prioridade}
-                </p>
-                <p>
-                  <strong>Descrição:</strong> {chamado.descricao}
-                </p>
-
-                {user?.role === "ADMIN" && chamado.cliente?.email && (
-                  <p>
-                    <strong>Cliente:</strong> {chamado.cliente.email}
-                  </p>
-                )}
-
-                <button
-                  className={styles.actionButton}
-                  onClick={() => setModalChamado(chamado)}
-                >
-                  {user?.role === "ADMIN"
-                    ? "Atribuir Técnico / Serviços"
-                    : "Pegar Chamado / Serviços"}
-                </button>
-              </li>
-            ))}
-          </ul>
+          <table className={styles.chamadoTable}>
+            <thead>
+              <tr>
+                <th>Responsável</th>
+                <th>Serviços Atribuídos</th>
+                <th>Prioridade</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chamados.map((chamado) => (
+                <tr key={chamado.id}>
+                  <td>
+                    {chamado.tecnico?.email
+                      ? `Técnico: ${chamado.tecnico.email}`
+                      : chamado.user?.email ?? "—"}
+                  </td>
+                  <td>
+                    {chamado.chamado_servico.length > 0 ? (
+                      chamado.chamado_servico.map((cs) => (
+                        <div key={cs.servico.id}>{cs.servico.titulo}</div>
+                      ))
+                    ) : (
+                      <span>—</span>
+                    )}
+                  </td>
+                  <td>{chamado.prioridade}</td>
+                  <td>{chamado.descricao}</td>
+                  <td>
+                    <button
+                      className={styles.actionButton}
+                      onClick={() => setModalChamado(chamado)}
+                    >
+                      {user?.role === "ADMIN"
+                        ? "Atribuir Técnico / Serviços"
+                        : "Pegar Chamado / Serviços"}
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleRemoverChamado(chamado.id)}
+                    >
+                      Remover
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
 
         {modalChamado && (
