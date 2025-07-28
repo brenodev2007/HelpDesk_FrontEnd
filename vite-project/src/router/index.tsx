@@ -18,22 +18,22 @@ export default function AppRoutes() {
 
   return (
     <Routes>
+      {/* Rota raiz - redireciona direto para criar chamado */}
+      <Route path="/" element={<CriarChamado />} />
+
       {/* Rotas públicas */}
-      <Route path="/" element={user ? <Navigate to="/profile" /> : <Login />} />
-      <Route
-        path="/register"
-        element={user ? <Navigate to="/profile" /> : <Register />}
-      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       {/* Rotas protegidas comuns para qualquer usuário logado */}
       <Route
         path="/meus-chamados"
-        element={user ? <MeusChamados /> : <Navigate to="/" replace />}
+        element={user ? <MeusChamados /> : <Navigate to="/login" replace />}
       />
 
       <Route
         path="/profile"
-        element={user ? <Profile /> : <Navigate to="/" replace />}
+        element={user ? <Profile /> : <Navigate to="/login" replace />}
       />
 
       <Route
@@ -46,7 +46,7 @@ export default function AppRoutes() {
               <CriarChamado />
             )
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="/login" replace />
           )
         }
       />
@@ -62,7 +62,7 @@ export default function AppRoutes() {
               <Navigate to="/criar-chamado" replace />
             )
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="/login" replace />
           )
         }
       />

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Input } from "../components/Input";
 import { Button } from "../components/Buttom";
 import api from "../services/api";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./styles/Login.module.css";
 import logo from "../assets/logo.svg";
@@ -11,7 +10,6 @@ import { Link } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,8 +25,8 @@ export default function Login() {
       // Armazena o token
       localStorage.setItem("token", token);
 
-      // Redireciona para a tela de perfil
-      navigate("/profile");
+      // Redireciona para a página inicial com reload
+      window.location.href = "/criar-chamado";
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const message =
@@ -47,7 +45,7 @@ export default function Login() {
     <div className={styles.fundo_login}>
       <div className={styles.fundo_form}>
         <div className={styles.logo}>
-          <img src={logo} alt="" />
+          <img src={logo} alt="Logo" />
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
