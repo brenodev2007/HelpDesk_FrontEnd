@@ -10,9 +10,8 @@
 }
 
 h1 {
-  text-align: center;
   margin-bottom: 2rem;
-  color: #19286d;
+  color: #2e3da3;
   font-size: 2rem;
   font-weight: 600;
 }
@@ -37,7 +36,7 @@ h1 {
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(25, 40, 109, 0.5);
+  background-color: rgba(78, 78, 82, 0.5);
   z-index: 1000;
 }
 

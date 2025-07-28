@@ -8,6 +8,7 @@ interface Chamado {
   id: string;
   prioridade: string;
   descricao: string;
+  categoria: string; // campo categoria adicionado
   chamado_servico: {
     servico: {
       id: string;
@@ -49,7 +50,6 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingServicos, setLoadingServicos] = useState(true);
 
-  // Inicializa os selecionados com os dados do chamado
   useEffect(() => {
     if (chamado) {
       const servicosIds = chamado.chamado_servico.map((cs) => cs.servico.id);
@@ -261,6 +261,7 @@ export const MeusChamados: React.FC = () => {
               <tr>
                 <th>Responsável</th>
                 <th>Serviços Atribuídos</th>
+                <th>Categoria</th> {/* Coluna categoria */}
                 <th>Prioridade</th>
                 <th>Descrição</th>
                 <th>Ações</th>
@@ -283,6 +284,7 @@ export const MeusChamados: React.FC = () => {
                       <span>—</span>
                     )}
                   </td>
+                  <td>{chamado.categoria}</td> {/* Exibe categoria */}
                   <td>{chamado.prioridade}</td>
                   <td>{chamado.descricao}</td>
                   <td>

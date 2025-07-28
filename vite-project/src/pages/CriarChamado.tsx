@@ -14,6 +14,9 @@ export const CriarChamado: React.FC = () => {
   const [prioridade, setPrioridade] = useState<"BAIXA" | "MEDIA" | "ALTA">(
     "BAIXA"
   );
+  const [categoria, setCategoria] = useState<
+    "SUPORTE" | "MANUTENCAO" | "CONSULTORIA" | "TREINAMENTO"
+  >("SUPORTE");
   const [erro, setErro] = useState<string>("");
   const [mensagem, setMensagem] = useState<string>("");
 
@@ -23,6 +26,7 @@ export const CriarChamado: React.FC = () => {
       navigate("/tecnico");
     }
   }, [user, navigate]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErro("");
@@ -34,16 +38,18 @@ export const CriarChamado: React.FC = () => {
     }
 
     try {
-      console.log({ descricao, prioridade });
       const response = await api.post("/clientes/criar-chamado", {
         descricao,
-        prioridade: prioridade.toUpperCase() as "BAIXA" | "MÉDIA" | "ALTA",
+        prioridade,
+        categoria,
       });
-      console.log(response);
+
+      console.log("Chamado criado:", response.data);
 
       setMensagem("Chamado criado com sucesso!");
       setDescricao("");
       setPrioridade("BAIXA");
+      setCategoria("SUPORTE");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setErro(error.response?.data?.error || "Erro ao criar chamado.");
@@ -61,34 +67,64 @@ export const CriarChamado: React.FC = () => {
         {erro && <p style={{ color: "red" }}>{erro}</p>}
         {mensagem && <p style={{ color: "green" }}>{mensagem}</p>}
         <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="descricao">Descrição:</label>
-            <br />
+          <div className={styles.formGroup}>
+            <label htmlFor="descricao" className={styles.label}>
+              Descrição:
+            </label>
             <textarea
               id="descricao"
+              className={styles.textarea}
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               rows={4}
-              cols={40}
               required
             />
           </div>
-          <div style={{ marginTop: 16 }}>
-            <label htmlFor="prioridade">Prioridade:</label>
-            <br />
+
+          <div className={styles.formGroup}>
+            <label htmlFor="prioridade" className={styles.label}>
+              Prioridade:
+            </label>
             <select
               id="prioridade"
+              className={styles.selectInput}
               value={prioridade}
               onChange={(e) =>
                 setPrioridade(e.target.value as "BAIXA" | "MEDIA" | "ALTA")
               }
             >
               <option value="BAIXA">BAIXA</option>
-              <option value="MEDIA">MEDIA</option>
+              <option value="MEDIA">MÉDIA</option>
               <option value="ALTA">ALTA</option>
             </select>
           </div>
-          <button type="submit" style={{ marginTop: 16 }}>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="categoria" className={styles.label}>
+              Categoria do Serviço:
+            </label>
+            <select
+              id="categoria"
+              className={styles.selectInput}
+              value={categoria}
+              onChange={(e) =>
+                setCategoria(
+                  e.target.value as
+                    | "SUPORTE"
+                    | "MANUTENCAO"
+                    | "CONSULTORIA"
+                    | "TREINAMENTO"
+                )
+              }
+            >
+              <option value="SUPORTE">SUPORTE</option>
+              <option value="MANUTENCAO">MANUTENÇÃO</option>
+              <option value="CONSULTORIA">CONSULTORIA</option>
+              <option value="TREINAMENTO">TREINAMENTO</option>
+            </select>
+          </div>
+
+          <button type="submit" className={styles.buttonSubmit}>
             Criar Chamado
           </button>
         </form>
