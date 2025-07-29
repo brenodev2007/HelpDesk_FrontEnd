@@ -6,6 +6,7 @@
   background-color: #f9fafb;
   font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #cbd5e1;
+  margin-left: calc(260px + 1rem);
 }
 
 .mainContent {

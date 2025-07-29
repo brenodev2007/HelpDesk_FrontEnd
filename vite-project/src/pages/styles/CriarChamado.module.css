@@ -3,6 +3,7 @@
   min-height: 100vh;
   background-color: #f9fafb;
   font-family: "Inter", sans-serif;
+  margin-left: calc(260px + 1rem);
   color: #1e2024;
 }
 
