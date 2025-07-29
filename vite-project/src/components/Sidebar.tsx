@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./styles/Sidebar.module.css";
+import logo from "../assets/sidebarLogo.svg"; // Importa o logo
 
 type SidebarProps = {
   onTecnicoClick?: () => void;
@@ -30,8 +31,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
   };
 
   useEffect(() => {
-    handleResize(); // verifica ao montar
-    window.addEventListener("resize", handleResize); // escuta mudanças
+    handleResize();
+    window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -45,85 +46,91 @@ export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
   };
 
   const sidebarContent = (
-    <ul>
-      <li>
-        <button onClick={openProfileModal} className={styles.linkButton}>
-          <FiUser className={styles.icon} />
-          <span>Perfil</span>
-        </button>
-      </li>
-
-      {user && user.role !== "TECNICO" && (
+    <>
+      <ul>
         <li>
-          <NavLink
-            to="/criar-chamado"
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-            }
-          >
-            <FiPlusCircle className={styles.icon} />
-            <span>Criar Chamado</span>
-          </NavLink>
+          <button onClick={openProfileModal} className={styles.linkButton}>
+            <FiUser className={styles.icon} />
+            <span>Perfil</span>
+          </button>
         </li>
-      )}
 
-      {(user?.role === "ADMIN" || user?.role === "USER") && (
+        {user && user.role !== "TECNICO" && (
+          <li>
+            <NavLink
+              to="/criar-chamado"
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+              }
+            >
+              <FiPlusCircle className={styles.icon} />
+              <span>Criar Chamado</span>
+            </NavLink>
+          </li>
+        )}
+
+        {(user?.role === "ADMIN" || user?.role === "USER") && (
+          <li>
+            <NavLink
+              to="/meus-chamados"
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+              }
+            >
+              <FiList className={styles.icon} />
+              <span>Meus Chamados</span>
+            </NavLink>
+          </li>
+        )}
+
+        {user?.role === "ADMIN" && (
+          <li>
+            <NavLink
+              to="/painel-administrador"
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+              }
+            >
+              <FiSettings className={styles.icon} />
+              <span>Painel do Administrador</span>
+            </NavLink>
+          </li>
+        )}
+
+        {user?.role === "TECNICO" && (
+          <li>
+            <NavLink
+              to="/tecnico"
+              onClick={() => onTecnicoClick?.()}
+              className={({ isActive }) =>
+                isActive ? `${styles.link} ${styles.activeLink}` : styles.link
+              }
+            >
+              <FiTool className={styles.icon} />
+              <span>Técnico</span>
+            </NavLink>
+          </li>
+        )}
+
         <li>
-          <NavLink
-            to="/meus-chamados"
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-            }
-          >
-            <FiList className={styles.icon} />
-            <span>Meus Chamados</span>
-          </NavLink>
+          <button onClick={handleLogout} className={styles.logoutButton}>
+            <FiLogOut className={styles.icon} />
+            <span>Logout</span>
+          </button>
         </li>
-      )}
+      </ul>
 
-      {user?.role === "ADMIN" && (
-        <li>
-          <NavLink
-            to="/painel-administrador"
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-            }
-          >
-            <FiSettings className={styles.icon} />
-            <span>Painel do Administrador</span>
-          </NavLink>
-        </li>
-      )}
-
-      {user?.role === "TECNICO" && (
-        <li>
-          <NavLink
-            to="/tecnico"
-            onClick={() => onTecnicoClick?.()}
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-            }
-          >
-            <FiTool className={styles.icon} />
-            <span>Técnico</span>
-          </NavLink>
-        </li>
-      )}
-
-      <li>
-        <button onClick={handleLogout} className={styles.logoutButton}>
-          <FiLogOut className={styles.icon} />
-          <span>Logout</span>
-        </button>
-      </li>
-    </ul>
+      {/* Imagem do logo no final */}
+      <div className={styles.logoContainer}>
+        <img src={logo} alt="Logo" className={styles.logoImage} />
+      </div>
+    </>
   );
 
   return (
     <>
       {isMobile ? (
         <>
-          {/* Botão hambúrguer */}
           <button
             className={styles.toggleButton}
             onClick={() => setIsOpen(true)}
