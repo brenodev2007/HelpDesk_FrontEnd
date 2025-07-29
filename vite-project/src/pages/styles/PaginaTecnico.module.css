@@ -1,139 +1,272 @@
-.listaChamados {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
+@keyframes fadeInSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.chamadoCard {
-  background: #ffffff;
-  border-left: 6px solid #0070f3;
-  border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(46, 61, 163, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(46, 61, 163, 0.7);
+  }
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+  color: #1e2024;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mainWrapper {
+  flex: 1;
+  padding: 3rem 3.5rem;
+  margin-left: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-width: 1220px;
+  margin-right: auto;
+  margin-left: auto;
+  gap: 2rem;
+
+  border-radius: 18px;
+
+  transition: box-shadow 0.3s ease;
+  animation: fadeInSlideUp 0.6s ease forwards;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  font-style: bold;
+  color: #2e3da3;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  letter-spacing: 0.18em;
+  animation: fadeInSlideUp 0.6s ease 0.15s forwards;
+  opacity: 0;
+}
+
+.refreshButton {
+  align-self: flex-start;
+  background-color: #2e3da3;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
+  margin-bottom: 2rem;
+  box-shadow: 0 6px 12px rgba(46, 61, 163, 0.3);
+  animation: pulseGlow 3s infinite;
+}
+
+.refreshButton:hover {
+  background-color: #263388;
+  transform: scale(1.08);
+  box-shadow: 0 8px 18px rgba(38, 51, 136, 0.5);
+  animation: none; /* pausa o pulse quando hover */
+}
+
+.errorText {
+  color: #b91c1c;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  font-size: 1.05rem;
+  text-shadow: 0 0 2px rgba(185, 28, 28, 0.7);
+  animation: fadeInSlideUp 0.5s ease forwards;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.card {
+  background-color: #fff;
+  border: 1.5px solid #d6dbf7;
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 16px 48px rgba(46, 61, 163, 0.07);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: box-shadow 0.4s ease, transform 0.25s ease;
+  cursor: pointer;
+  user-select: none;
+  animation: fadeInSlideUp 0.6s ease forwards;
+  opacity: 0;
 }
 
-.chamadoCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+.card:nth-child(1) {
+  animation-delay: 0.2s;
+}
+.card:nth-child(2) {
+  animation-delay: 0.3s;
+}
+.card:nth-child(3) {
+  animation-delay: 0.4s;
+}
+/* etc. para mais cards, continue adicionando delay incremental */
+
+.card:hover {
+  box-shadow: 0 28px 72px rgba(46, 61, 163, 0.15);
+  transform: translateY(-6px);
 }
 
-.chamadoCard h3 {
-  margin: 0 0 0.6rem;
-  color: #0070f3;
-  font-size: 1.4rem;
-  font-weight: 600;
+.cardTitle {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #2e3da3;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 1px 1px 2px rgba(46, 61, 163, 0.25);
+  transition: color 0.3s ease;
 }
 
-.chamadoCard p {
-  margin: 0.3rem 0;
-  font-size: 0.95rem;
+.card:hover .cardTitle {
+  color: #1a286d;
+}
+
+.cardDesc {
+  font-size: 1.1rem;
+  color: #2a2e35;
+  margin-bottom: 1.4rem;
+  flex-grow: 1;
+  line-height: 1.5;
+  letter-spacing: 0.015em;
+}
+
+.cardClient {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 1.4rem;
+  font-style: italic;
+  transition: color 0.3s ease;
+}
+
+.card:hover .cardClient {
+  color: #445a77;
 }
 
 .statusBadge {
   display: inline-block;
-  padding: 4px 10px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  border-radius: 20px;
   text-transform: uppercase;
-  margin-top: 0.5rem;
+  color: #fff;
+  margin-bottom: 1.4rem;
+  user-select: none;
+  background: linear-gradient(135deg, #2e3da3 0%, #1a286d 100%);
+  box-shadow: 0 4px 12px rgba(46, 61, 163, 0.4);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
-.status-pending {
-  background-color: #ffecb3;
-  color: #b58900;
+.statusBadge:hover {
+  background: linear-gradient(135deg, #1a286d 0%, #2e3da3 100%);
+  box-shadow: 0 6px 20px rgba(46, 61, 163, 0.7);
 }
 
-.status-inprogress {
-  background-color: #bbdefb;
-  color: #1565c0;
+.selectWrapper {
+  margin-top: auto;
 }
 
-.status-done {
-  background-color: #c8e6c9;
-  color: #2e7d32;
+.label {
+  display: block;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #2a2e35;
+  margin-bottom: 0.75rem;
+  user-select: none;
+  transition: color 0.3s ease;
 }
 
-select {
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  margin-top: 0.4rem;
-  background-color: #fdfdfd;
-  transition: border-color 0.3s;
-}
-
-select:hover {
-  border-color: #0070f3;
-}
-
-.refreshButton {
-  background-color: #0070f3;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: bold;
+input[type="checkbox"] {
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out, transform 0.2s ease;
+  transition: transform 0.15s ease;
 }
 
-.refreshButton:hover {
-  background-color: #005ac1;
-  transform: scale(1.03);
+input[type="checkbox"]:hover {
+  transform: scale(1.1);
 }
 
-.badgePending {
-  background-color: #facc15;
-  color: #7c2d12;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 0.9rem;
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid #2e3da3;
+  outline-offset: 2px;
+  box-shadow: 0 0 6px #2e3da3;
 }
 
-.badgeInProgress {
-  background-color: #3b82f6;
-  color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 0.9rem;
+.select__control {
+  border-radius: 16px !important;
+  border-color: #aab8ff !important;
+  background-color: #f0f3ff !important;
+  min-height: 44px;
+  font-size: 1.1rem;
+  box-shadow: none !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.badgeDone {
-  background-color: #10b981;
-  color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 0.9rem;
+.select__control:hover {
+  border-color: #2e3da3 !important;
+  box-shadow: 0 0 8px rgba(46, 61, 163, 0.4) !important;
 }
 
-.selectStatus {
-  padding: 6px 10px;
-  border-radius: 6px;
-  margin-top: 5px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  background-color: #f9fafb;
+.select__option--is-focused {
+  background-color: #d3d8ff !important;
+  color: #1e2024 !important;
+  font-weight: 600;
 }
 
-.mainContent {
-  flex: 1;
-  padding: 2rem 3rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+.select__single-value {
+  color: #1e2024 !important;
+  font-weight: 700;
+}
 
-  /* Adicione esta linha 👇 */
-  margin-left: 220px; /* mesmo valor da largura da sidebar */
+button.actionButton {
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.2s ease;
+  box-shadow: 0 6px 12px rgba(46, 61, 163, 0.3);
+}
+
+button.actionButton:hover:not(:disabled) {
+  background-color: #1a286d;
+  box-shadow: 0 8px 24px rgba(38, 51, 136, 0.6);
+  transform: scale(1.05);
+}
+
+button.actionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .mainWrapper {
+    margin-left: 0;
+    padding: 2rem 1.5rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -7,8 +7,9 @@ import styles from "./styles/PaginaTecnico.module.css";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import Select, { StylesConfig, GroupBase } from "react-select";
-
 import clsx from "clsx";
+
+import { RefreshCcw, User, BadgeCheck, Loader2, Clock } from "lucide-react";
 
 type ChamadoServico = {
   id: string;
@@ -31,15 +32,30 @@ type StatusOption = {
   value: StatusType;
   label: string;
   color: string;
+  icon: React.ReactNode;
 };
 
 const statusOptions: StatusOption[] = [
-  { value: "PENDING", label: "Pendente", color: "#facc15" },
-  { value: "IN_PROGRESS", label: "Em Progresso", color: "#3b82f6" },
-  { value: "DONE", label: "Concluído", color: "#10b981" },
+  {
+    value: "PENDING",
+    label: "Pendente",
+    color: "#facc15",
+    icon: <Clock size={16} />,
+  },
+  {
+    value: "IN_PROGRESS",
+    label: "Em Progresso",
+    color: "#3b82f6",
+    icon: <Loader2 size={16} />,
+  },
+  {
+    value: "DONE",
+    label: "Concluído",
+    color: "#10b981",
+    icon: <BadgeCheck size={16} />,
+  },
 ];
 
-// Tipando customStyles com StylesConfig do react-select
 const customStyles: StylesConfig<
   StatusOption,
   false,
@@ -59,10 +75,16 @@ const customStyles: StylesConfig<
     backgroundColor: state.isFocused ? "#e0e7ff" : "#fff",
     color: "#1e2024",
     cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
   }),
   singleValue: (provided) => ({
     ...provided,
     color: "#1e2024",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
   }),
   menu: (provided) => ({
     ...provided,
@@ -128,16 +150,8 @@ export const PaginaTecnico: React.FC = () => {
   };
 
   const getStatusColor = (status: StatusType) => {
-    switch (status) {
-      case "PENDING":
-        return "#facc15";
-      case "IN_PROGRESS":
-        return "#3b82f6";
-      case "DONE":
-        return "#10b981";
-      default:
-        return "#999";
-    }
+    const found = statusOptions.find((o) => o.value === status);
+    return found?.color ?? "#999";
   };
 
   return (
@@ -148,6 +162,7 @@ export const PaginaTecnico: React.FC = () => {
         <h1 className={styles.title}>Área do Técnico</h1>
 
         <button className={styles.refreshButton} onClick={fetchChamados}>
+          <RefreshCcw size={16} style={{ marginRight: "0.5rem" }} />
           Atualizar
         </button>
 
@@ -171,7 +186,8 @@ export const PaginaTecnico: React.FC = () => {
               <p className={styles.cardDesc}>{chamado.chamado.descricao}</p>
 
               <p className={styles.cardClient}>
-                <strong>Cliente: </strong>
+                <User size={16} style={{ marginRight: 4 }} />
+                <strong>Cliente: </strong>{" "}
                 {chamado.chamado.user.nome || chamado.chamado.user.email}
               </p>
 
@@ -179,6 +195,7 @@ export const PaginaTecnico: React.FC = () => {
                 className={clsx(styles.statusBadge)}
                 style={{ backgroundColor: getStatusColor(chamado.status) }}
               >
+                {statusOptions.find((o) => o.value === chamado.status)?.icon}{" "}
                 {statusOptions.find((o) => o.value === chamado.status)?.label}
               </div>
 
@@ -196,11 +213,19 @@ export const PaginaTecnico: React.FC = () => {
                   value={statusOptions.find((o) => o.value === chamado.status)}
                   onChange={(selected) => {
                     if (selected) {
-                      atualizarStatus(chamado.id, selected.value as StatusType);
+                      atualizarStatus(chamado.id, selected.value);
                     }
                   }}
                   styles={customStyles}
                   isSearchable={false}
+                  formatOptionLabel={(data) => (
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      {data.icon}
+                      {data.label}
+                    </div>
+                  )}
                 />
               </div>
             </motion.div>

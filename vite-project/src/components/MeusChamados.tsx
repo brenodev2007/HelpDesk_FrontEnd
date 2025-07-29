@@ -86,6 +86,12 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
   }, [user?.role]);
 
   const handleCheckboxChange = (id: string) => {
+    // Permitir alteração só se o serviço NÃO estiver atribuído (checkbox habilitado)
+    const isAssigned = chamado.chamado_servico.some(
+      (cs) => cs.servico.id === id
+    );
+    if (isAssigned) return; // bloqueia desmarcar serviços já atribuídos
+
     setSelectedServicosIds((prev) =>
       prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
     );
@@ -173,17 +179,23 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
             {loadingServicos ? (
               <p>Carregando serviços...</p>
             ) : (
-              servicos.map((servico) => (
-                <label key={servico.id} className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    value={servico.id}
-                    checked={selectedServicosIds.includes(servico.id)}
-                    onChange={() => handleCheckboxChange(servico.id)}
-                  />
-                  {servico.titulo}
-                </label>
-              ))
+              servicos.map((servico) => {
+                const isAssigned = chamado.chamado_servico.some(
+                  (cs) => cs.servico.id === servico.id
+                );
+                return (
+                  <label key={servico.id} className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      value={servico.id}
+                      checked={selectedServicosIds.includes(servico.id)}
+                      onChange={() => handleCheckboxChange(servico.id)}
+                      disabled={isAssigned} // desabilita checkbox se já atribuído
+                    />
+                    {servico.titulo}
+                  </label>
+                );
+              })
             )}
           </fieldset>
 
