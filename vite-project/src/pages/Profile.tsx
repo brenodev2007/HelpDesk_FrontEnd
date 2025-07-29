@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import styles from "./styles/Profile.module.css";
+import { FiMail, FiLogOut, FiX } from "react-icons/fi";
 
 type ProfileModalProps = {
   onClose: () => void;
@@ -30,6 +31,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
       alert("Email atualizado com sucesso!");
       setShowEmailForm(false);
+      setNovoEmail("");
+      setSenhaAtual("");
     } catch (error) {
       alert(error);
     }
@@ -83,7 +86,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
             className={`${styles.button} ${styles.email}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
+            type="button"
           >
+            <FiMail style={{ marginRight: 8 }} />
             Trocar Email
           </motion.button>
 
@@ -128,15 +133,20 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
             className={`${styles.button} ${styles.logout}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
+            type="button"
           >
+            <FiLogOut style={{ marginRight: 8 }} />
             Logout
           </motion.button>
+
           <motion.button
             onClick={onClose}
             className={`${styles.button} ${styles.close}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
+            type="button"
           >
+            <FiX style={{ marginRight: 8 }} />
             Fechar
           </motion.button>
         </div>

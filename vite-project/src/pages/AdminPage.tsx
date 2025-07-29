@@ -4,7 +4,7 @@ import styles from "./styles/AdminPage.module.css";
 import api from "../services/api";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import { FaTrash, FaUserSlash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
 type ModalProps = {
   children: ReactNode;
@@ -170,27 +170,6 @@ const PainelAdministrador: React.FC = () => {
       toast.success("Técnico removido com sucesso");
     } catch (error) {
       toast.error("Erro ao remover técnico");
-      console.error(error);
-    }
-  };
-
-  const removerTecnicoDoServico = async (tecnicoId: string) => {
-    if (!confirm("Deseja realmente remover este técnico do serviço?")) return;
-    try {
-      await api.delete(`clientes/remover-tecnico/${tecnicoId}`);
-      setServicos((prev) =>
-        prev.map((servico) =>
-          servico.tecnico.id === tecnicoId
-            ? {
-                ...servico,
-                tecnico: { id: "", email: "Removido", cargo: null },
-              }
-            : servico
-        )
-      );
-      toast.success("Técnico removido com sucesso");
-    } catch (error) {
-      toast.error("Erro ao remover técnico do serviço");
       console.error(error);
     }
   };
@@ -371,17 +350,6 @@ const PainelAdministrador: React.FC = () => {
                     >
                       <FaTrash />
                     </button>
-                    {servico.tecnico.id && (
-                      <button
-                        className={styles.deleteButton}
-                        onClick={() =>
-                          removerTecnicoDoServico(servico.tecnico.id)
-                        }
-                        title="Remover Técnico do Serviço"
-                      >
-                        <FaUserSlash />
-                      </button>
-                    )}
                   </div>
                 </li>
               ))}
