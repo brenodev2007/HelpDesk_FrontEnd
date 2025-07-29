@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import { Profile } from "../pages/Profile";
 import { CriarChamado } from "../pages/CriarChamado";
 import { PaginaTecnico } from "../pages/TecnicoPage";
 import { useAuth } from "../context/AuthContext";
@@ -29,11 +28,6 @@ export default function AppRoutes() {
       <Route
         path="/meus-chamados"
         element={user ? <MeusChamados /> : <Navigate to="/login" replace />}
-      />
-
-      <Route
-        path="/profile"
-        element={user ? <Profile /> : <Navigate to="/login" replace />}
       />
 
       <Route

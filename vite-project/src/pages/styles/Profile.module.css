@@ -1,77 +1,66 @@
-.container {
-  background-color: #ffffff; /* fundo branco */
-  min-height: 100vh;
-  padding: 3rem 2.5rem;
-  color: #19286d;
-  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.3);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: #2c3e50;
+  text-align: left;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #111827;
+  text-align: center;
+}
+
+.infoGroup {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
 }
 
 .actions {
   display: flex;
-  justify-content: center;
-  gap: 1.25rem;
-  margin-top: 2rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .button {
-  padding: 0.85rem 2.25rem;
-  font-size: 1.1rem;
-  font-weight: 700;
+  padding: 0.6rem 1rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
-  user-select: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-width: 120px;
-  letter-spacing: 0.04em;
+  transition: background 0.2s ease;
 }
 
-.button:focus-visible {
-  outline: 3px solid #19286d;
-  outline-offset: 2px;
-}
-
-/* Botão de Editar */
-.edit {
-  background-color: #19286d;
-  color: #ffffff;
-  box-shadow: 0 6px 14px rgba(25, 40, 109, 0.25);
-}
-
-.edit:hover {
-  background-color: #0f1c59;
-  box-shadow: 0 8px 20px rgba(25, 40, 109, 0.4);
-  transform: translateY(-2px);
-}
-
-.edit:active {
-  transform: translateY(0);
-  box-shadow: 0 5px 15px rgba(25, 40, 109, 0.2);
-}
-
-/* Botão de Logout */
 .logout {
-  background-color: #b91c1c;
-  color: #ffffff;
-  box-shadow: 0 6px 14px rgba(185, 28, 28, 0.25);
+  background-color: #ef4444;
+  color: #fff;
 }
 
-.logout:hover {
-  background-color: #991b1b;
-  box-shadow: 0 8px 20px rgba(185, 28, 28, 0.4);
-  transform: translateY(-2px);
+.home {
+  background-color: #3b82f6;
+  color: #fff;
 }
 
-.logout:active {
-  transform: translateY(0);
-  box-shadow: 0 5px 15px rgba(185, 28, 28, 0.2);
+.close {
+  background-color: #e5e7eb;
+  color: #374151;
 }
