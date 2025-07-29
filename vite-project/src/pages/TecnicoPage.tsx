@@ -181,8 +181,6 @@ export const PaginaTecnico: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <h3 className={styles.cardTitle}>{chamado.servico.nome}</h3>
-
               <p className={styles.cardDesc}>{chamado.chamado.descricao}</p>
 
               <p className={styles.cardClient}>
