@@ -53,7 +53,7 @@
   color: #2e3da3;
   text-transform: uppercase;
   margin-bottom: 2rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.17em;
   animation: fadeInSlideUp 0.6s ease 0.15s forwards;
   opacity: 0;
 }
