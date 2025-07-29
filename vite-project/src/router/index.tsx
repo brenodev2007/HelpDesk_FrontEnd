@@ -6,6 +6,7 @@ import { PaginaTecnico } from "../pages/TecnicoPage";
 import { useAuth } from "../context/AuthContext";
 import { AdminRoute } from "../components/AdminRoute";
 import PainelAdministrador from "../pages/AdminPage";
+import { ProfileModalOverlay } from "../hooks/ProfileModalOverlay";
 import { MeusChamados } from "../components/MeusChamados";
 
 export default function AppRoutes() {
@@ -23,6 +24,10 @@ export default function AppRoutes() {
       {/* Rotas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* Rota modal: exibida por cima da anterior */}
+
+      <Route path="/profile" element={<ProfileModalOverlay />} />
 
       {/* Rotas protegidas comuns para qualquer usuário logado */}
       <Route

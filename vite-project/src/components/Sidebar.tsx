@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   FiUser,
@@ -9,7 +9,6 @@ import {
   FiPlusCircle,
   FiTool,
 } from "react-icons/fi";
-
 import styles from "./styles/Sidebar.module.css";
 
 type SidebarProps = {
@@ -19,29 +18,27 @@ type SidebarProps = {
 export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
+  const openProfileModal = () => {
+    navigate("/profile", { state: { backgroundLocation: location } });
+  };
+
   return (
     <nav className={styles.sidebar}>
       <ul>
-        {/* Perfil */}
         <li>
-          <NavLink
-            to="/profile"
-            className={({ isActive }) =>
-              isActive ? `${styles.link} ${styles.activeLink}` : styles.link
-            }
-          >
+          <button onClick={openProfileModal} className={styles.linkButton}>
             <FiUser className={styles.icon} />
             Perfil
-          </NavLink>
+          </button>
         </li>
 
-        {/* Criar Chamado */}
         {user && user.role !== "TECNICO" && (
           <li>
             <NavLink
@@ -56,7 +53,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
           </li>
         )}
 
-        {/* Meus Chamados para ADMIN e USER */}
         {(user?.role === "ADMIN" || user?.role === "USER") && (
           <li>
             <NavLink
@@ -71,7 +67,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
           </li>
         )}
 
-        {/* Painel do Administrador */}
         {user?.role === "ADMIN" && (
           <li>
             <NavLink
@@ -86,14 +81,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
           </li>
         )}
 
-        {/* Técnico */}
         {user?.role === "TECNICO" && (
           <li>
             <NavLink
               to="/tecnico"
-              onClick={() => {
-                if (onTecnicoClick) onTecnicoClick();
-              }}
+              onClick={() => onTecnicoClick?.()}
               className={({ isActive }) =>
                 isActive ? `${styles.link} ${styles.activeLink}` : styles.link
               }
@@ -104,7 +96,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
           </li>
         )}
 
-        {/* Logout */}
         <li>
           <button onClick={handleLogout} className={styles.logoutButton}>
             <FiLogOut className={styles.icon} />

@@ -2,37 +2,40 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  backdrop-filter: blur(5px);
-  background-color: rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
 }
 
 .modal {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 2rem;
+  position: fixed;
+  top: 30%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  color: #000000;
+  padding: 3rem;
+  border-radius: 1.25rem;
   width: 90%;
-  max-width: 400px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  color: #2c3e50;
-  text-align: left;
+  max-width: 600px;
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
 .title {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: #111827;
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
 .infoGroup {
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.infoGroup p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
 }
 
 .actions {
@@ -42,25 +45,82 @@
 }
 
 .button {
-  padding: 0.6rem 1rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 2px solid #000000;
+  background: transparent;
+  color: #000000;
   cursor: pointer;
-  transition: background 0.2s ease;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+  background: #000000;
+  color: #ffffff;
 }
 
 .logout {
+  border-color: #ef4444;
+}
+
+.logout:hover {
   background-color: #ef4444;
-  color: #fff;
+  color: #ffffff;
 }
 
 .home {
+  border-color: #3b82f6;
+}
+
+.home:hover {
   background-color: #3b82f6;
-  color: #fff;
+  color: #ffffff;
 }
 
 .close {
-  background-color: #e5e7eb;
-  color: #374151;
+  border-color: #6b7280;
+}
+
+.close:hover {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+.email {
+  border-color: #10b981;
+}
+
+.email:hover {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.form input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.4rem;
+  font-size: 1rem;
+}
+
+.confirm {
+  background-color: #000;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.confirm:hover {
+  background-color: #222;
 }

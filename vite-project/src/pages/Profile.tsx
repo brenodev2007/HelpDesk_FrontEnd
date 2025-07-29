@@ -1,66 +1,144 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
+
 import styles from "./styles/Profile.module.css";
-import { motion } from "framer-motion";
 
-export const Profile: React.FC = () => {
-  const { user, logout, loading } = useAuth();
-  const navigate = useNavigate();
-  const [showPopup, setShowPopup] = useState(true);
+type ProfileModalProps = {
+  onClose: () => void;
+};
 
-  if (loading || !user || !showPopup) return null;
+export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
+  const { user, logout } = useAuth();
 
-  const handleHomeClick = () => {
-    if (user.role === "TECNICO") navigate("/tecnico");
-    else if (user.role === "USER" || user.role === "ADMIN")
-      navigate("/criar-chamado");
-    else navigate("/");
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [novoEmail, setNovoEmail] = useState("");
+  const [senhaAtual, setSenhaAtual] = useState("");
+
+  if (!user) return null;
+
+  const handleTrocarEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/atualizar-email", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ novoEmail, senhaAtual }),
+      });
+
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Erro ao atualizar email");
+
+      alert("Email atualizado com sucesso!");
+      setShowEmailForm(false);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (
-    <div className={styles.backdrop} onClick={() => setShowPopup(false)}>
+    <>
+      <div className={styles.backdrop} onClick={onClose} />
       <motion.div
         className={styles.modal}
-        onClick={(e) => e.stopPropagation()} // Previne fechar ao clicar dentro
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -30, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
       >
-        <h2 className={styles.title}>Perfil do Usuário</h2>
-        <div className={styles.infoGroup}>
-          <p>
-            <strong>Nome:</strong> {user.name}
-          </p>
+        <motion.h2
+          className={styles.title}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          Perfil
+        </motion.h2>
+
+        <motion.div
+          className={styles.infoGroup}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
           <p>
             <strong>Email:</strong> {user.email}
           </p>
           <p>
             <strong>Função:</strong> {user.role}
           </p>
-        </div>
+          <p>
+            <strong>ID:</strong> {user.id}
+          </p>
+        </motion.div>
 
         <div className={styles.actions}>
-          <button
+          <motion.button
+            onClick={() => setShowEmailForm(!showEmailForm)}
+            className={`${styles.button} ${styles.email}`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            Trocar Email
+          </motion.button>
+
+          <AnimatePresence>
+            {showEmailForm && (
+              <motion.form
+                onSubmit={handleTrocarEmail}
+                className={styles.form}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <input
+                  type="email"
+                  placeholder="Novo email"
+                  value={novoEmail}
+                  onChange={(e) => setNovoEmail(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Senha atual"
+                  value={senhaAtual}
+                  onChange={(e) => setSenhaAtual(e.target.value)}
+                  required
+                />
+                <motion.button
+                  type="submit"
+                  className={styles.confirm}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Confirmar
+                </motion.button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          <motion.button
             onClick={logout}
             className={`${styles.button} ${styles.logout}`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
           >
             Logout
-          </button>
-          <button
-            onClick={handleHomeClick}
-            className={`${styles.button} ${styles.home}`}
-          >
-            Ir para Home
-          </button>
-          <button
-            onClick={() => setShowPopup(false)}
+          </motion.button>
+
+          <motion.button
+            onClick={onClose}
             className={`${styles.button} ${styles.close}`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
           >
             Fechar
-          </button>
+          </motion.button>
         </div>
       </motion.div>
-    </div>
+    </>
   );
 };
