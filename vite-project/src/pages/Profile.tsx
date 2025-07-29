@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
+import api from "../services/api";
 
 import styles from "./styles/Profile.module.css";
 
@@ -20,15 +21,12 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
   const handleTrocarEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/atualizar-email", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ novoEmail, senhaAtual }),
+      const response = await api.put("/clientes/atualizar-email", {
+        novoEmail,
+        senhaAtual,
       });
 
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.error || "Erro ao atualizar email");
+      console.log(response.data);
 
       alert("Email atualizado com sucesso!");
       setShowEmailForm(false);
