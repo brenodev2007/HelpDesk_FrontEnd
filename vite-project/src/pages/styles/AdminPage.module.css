@@ -343,3 +343,111 @@ label {
   transform: scale(0.95);
   box-shadow: 0 0 8px #b43535;
 }
+
+.clienteCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  color: #1e2024;
+  user-select: text;
+  transition: box-shadow 0.3s ease;
+}
+
+.clienteCard:hover {
+  box-shadow: 0 6px 16px rgba(46, 61, 163, 0.15);
+}
+
+.clienteInfo p {
+  margin: 0.15rem 0;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+/* Botão delete já estava no CSS, só melhorei a cor para hover */
+.deleteButton {
+  background-color: transparent;
+  border: 2px solid #e53e3e;
+  color: #e53e3e;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.15s ease;
+  box-shadow: none;
+}
+
+.deleteButton:hover {
+  background-color: #e53e3e;
+  color: #fff;
+  box-shadow: 0 0 12px #e53e3e;
+  transform: scale(1.1);
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 8px #b43535;
+}
+
+.tecnicoCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  color: #1e2024;
+  user-select: text;
+  transition: box-shadow 0.3s ease;
+}
+
+.tecnicoCard:hover {
+  box-shadow: 0 6px 16px rgba(46, 61, 163, 0.15);
+}
+
+.tecnicoInfo p {
+  margin: 0.15rem 0;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+/* Botão delete estilizado (igual clientes) */
+.deleteButton {
+  background-color: transparent;
+  border: 2px solid #e53e3e;
+  color: #e53e3e;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.15s ease;
+  box-shadow: none;
+}
+
+.deleteButton:hover {
+  background-color: #e53e3e;
+  color: #fff;
+  box-shadow: 0 0 12px #e53e3e;
+  transform: scale(1.1);
+}
+
+.deleteButton:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 8px #b43535;
+}

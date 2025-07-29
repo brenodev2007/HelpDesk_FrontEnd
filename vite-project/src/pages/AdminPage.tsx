@@ -306,23 +306,32 @@ const PainelAdministrador: React.FC = () => {
         )}
 
         {/* Modais de listas */}
+
+        {/* Clientes - lista melhorada */}
         {showClientesModal && (
           <Modal onClose={() => setShowClientesModal(false)}>
             <h3>Clientes Cadastrados</h3>
             <ul className={styles.modalList}>
               {clientes.map((cliente) => (
-                <li key={cliente.id} className={styles.modalItem}>
-                  <strong>ID:</strong> {cliente.id}
-                  <br />
-                  <strong>Email:</strong> {cliente.email}
-                  <br />
-                  <strong>Cargo:</strong> {cliente.cargo || "N/A"}
-                  <br />
+                <li key={cliente.id} className={styles.clienteCard}>
+                  <div className={styles.clienteInfo}>
+                    <p>
+                      <strong>ID:</strong> {cliente.id}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {cliente.email}
+                    </p>
+                    <p>
+                      <strong>Cargo:</strong> {cliente.cargo || "N/A"}
+                    </p>
+                  </div>
                   <button
                     className={styles.deleteButton}
                     onClick={() => removerConta(cliente.id)}
+                    title="Remover Conta"
                   >
-                    Remover Conta
+                    <FaTrash style={{ marginRight: 6 }} />
+                    Remover
                   </button>
                 </li>
               ))}
@@ -330,6 +339,7 @@ const PainelAdministrador: React.FC = () => {
           </Modal>
         )}
 
+        {/* Serviços */}
         {showServicosModal && (
           <Modal onClose={() => setShowServicosModal(false)}>
             <h3>Serviços Cadastrados</h3>
@@ -379,21 +389,31 @@ const PainelAdministrador: React.FC = () => {
           </Modal>
         )}
 
+        {/* Técnicos */}
         {showTecnicosModal && (
           <Modal onClose={() => setShowTecnicosModal(false)}>
             <h3>Técnicos Cadastrados</h3>
             <ul className={styles.modalList}>
               {tecnicos.map((tecnico) => (
-                <li key={tecnico.id} className={styles.modalItem}>
-                  <strong>ID:</strong> {tecnico.id}
-                  <br />
-                  <strong>Email:</strong> {tecnico.email}
-                  <br />
+                <li key={tecnico.id} className={styles.tecnicoCard}>
+                  <div className={styles.tecnicoInfo}>
+                    <p>
+                      <strong>ID:</strong> {tecnico.id}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {tecnico.email}
+                    </p>
+                    <p>
+                      <strong>Cargo:</strong> {tecnico.cargo || "N/A"}
+                    </p>
+                  </div>
                   <button
                     className={styles.deleteButton}
                     onClick={() => removerTecnico(tecnico.id)}
+                    title="Remover Técnico"
                   >
-                    Remover Técnico
+                    <FaTrash style={{ marginRight: "6px" }} />
+                    Remover
                   </button>
                 </li>
               ))}

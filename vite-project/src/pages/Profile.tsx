@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import api from "../services/api";
-
+import { useNavigate } from "react-router-dom";
 import styles from "./styles/Profile.module.css";
 
 type ProfileModalProps = {
@@ -11,7 +11,7 @@ type ProfileModalProps = {
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
   const { user, logout } = useAuth();
-
+  const navigate = useNavigate();
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [novoEmail, setNovoEmail] = useState("");
   const [senhaAtual, setSenhaAtual] = useState("");
@@ -33,6 +33,11 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     } catch (error) {
       alert(error);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -119,14 +124,13 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
           </AnimatePresence>
 
           <motion.button
-            onClick={logout}
+            onClick={handleLogout}
             className={`${styles.button} ${styles.logout}`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
           >
             Logout
           </motion.button>
-
           <motion.button
             onClick={onClose}
             className={`${styles.button} ${styles.close}`}

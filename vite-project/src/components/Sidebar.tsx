@@ -22,7 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onTecnicoClick }) => {
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate("/login");
   };
 
   const openProfileModal = () => {
