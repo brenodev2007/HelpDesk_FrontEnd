@@ -280,6 +280,39 @@ label {
   gap: 1rem;
 }
 
+.tecnicoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tecnicoInfo strong {
+  color: #2e3da3;
+}
+
+.tecnicoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.2rem;
+  border: 1.5px solid #c3c9f5;
+  border-radius: 12px;
+  background-color: #f8faff;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.tecnicoItem:hover {
+  background-color: #e9eeff;
+  border-color: #2e3da3;
+}
+
+.tecnicoActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 /* Botões delete minimalistas */
 .deleteButton {
   background-color: transparent;

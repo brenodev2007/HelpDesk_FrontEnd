@@ -56,6 +56,7 @@ const PainelAdministrador: React.FC = () => {
   const [showFormServico, setShowFormServico] = useState(false);
   const [showClientesModal, setShowClientesModal] = useState(false);
   const [showServicosModal, setShowServicosModal] = useState(false);
+  const [showTecnicosModal, setShowTecnicosModal] = useState(false);
 
   const [emailTecnico, setEmailTecnico] = useState("");
   const [passwordTecnico, setPasswordTecnico] = useState("");
@@ -66,6 +67,7 @@ const PainelAdministrador: React.FC = () => {
 
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [servicos, setServicos] = useState<Servico[]>([]);
+  const [tecnicos, setTecnicos] = useState<Cliente[]>([]);
 
   const handleCriarTecnico = async (e: FormEvent) => {
     e.preventDefault();
@@ -125,6 +127,17 @@ const PainelAdministrador: React.FC = () => {
     }
   };
 
+  const fetchTecnicos = async () => {
+    try {
+      const response = await api.get("clientes/listar-tecnicos");
+      setTecnicos(response.data);
+      setShowTecnicosModal(true);
+    } catch (error) {
+      toast.error("Erro ao buscar técnicos");
+      console.error(error);
+    }
+  };
+
   const removerConta = async (id: string) => {
     if (!confirm("Deseja realmente remover esta conta?")) return;
     try {
@@ -149,8 +162,20 @@ const PainelAdministrador: React.FC = () => {
     }
   };
 
-  const removerTecnicoDoServico = async (tecnicoId: string) => {
+  const removerTecnico = async (id: string) => {
     if (!confirm("Deseja realmente remover este técnico?")) return;
+    try {
+      await api.delete("clientes/remover", { data: { id } });
+      setTecnicos((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Técnico removido com sucesso");
+    } catch (error) {
+      toast.error("Erro ao remover técnico");
+      console.error(error);
+    }
+  };
+
+  const removerTecnicoDoServico = async (tecnicoId: string) => {
+    if (!confirm("Deseja realmente remover este técnico do serviço?")) return;
     try {
       await api.delete(`clientes/remover-tecnico/${tecnicoId}`);
       setServicos((prev) =>
@@ -165,7 +190,7 @@ const PainelAdministrador: React.FC = () => {
       );
       toast.success("Técnico removido com sucesso");
     } catch (error) {
-      toast.error("Erro ao remover técnico");
+      toast.error("Erro ao remover técnico do serviço");
       console.error(error);
     }
   };
@@ -203,9 +228,13 @@ const PainelAdministrador: React.FC = () => {
             <li className={styles.listItem}>
               <button onClick={fetchServicos}>Listar Serviços</button>
             </li>
+            <li className={styles.listItem}>
+              <button onClick={fetchTecnicos}>Listar Técnicos</button>
+            </li>
           </ul>
         </section>
 
+        {/* Modais de formulários */}
         {showFormTecnico && (
           <Modal onClose={() => setShowFormTecnico(false)}>
             <form onSubmit={handleCriarTecnico} className={styles.form}>
@@ -276,6 +305,7 @@ const PainelAdministrador: React.FC = () => {
           </Modal>
         )}
 
+        {/* Modais de listas */}
         {showClientesModal && (
           <Modal onClose={() => setShowClientesModal(false)}>
             <h3>Clientes Cadastrados</h3>
@@ -327,7 +357,6 @@ const PainelAdministrador: React.FC = () => {
                     <button
                       className={styles.deleteButton}
                       onClick={() => removerServico(servico.id)}
-                      aria-label={`Remover serviço ${servico.titulo}`}
                       title="Remover Serviço"
                     >
                       <FaTrash />
@@ -338,13 +367,34 @@ const PainelAdministrador: React.FC = () => {
                         onClick={() =>
                           removerTecnicoDoServico(servico.tecnico.id)
                         }
-                        aria-label={`Remover técnico ${servico.tecnico.email}`}
-                        title="Remover Técnico"
+                        title="Remover Técnico do Serviço"
                       >
                         <FaUserSlash />
                       </button>
                     )}
                   </div>
+                </li>
+              ))}
+            </ul>
+          </Modal>
+        )}
+
+        {showTecnicosModal && (
+          <Modal onClose={() => setShowTecnicosModal(false)}>
+            <h3>Técnicos Cadastrados</h3>
+            <ul className={styles.modalList}>
+              {tecnicos.map((tecnico) => (
+                <li key={tecnico.id} className={styles.modalItem}>
+                  <strong>ID:</strong> {tecnico.id}
+                  <br />
+                  <strong>Email:</strong> {tecnico.email}
+                  <br />
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => removerTecnico(tecnico.id)}
+                  >
+                    Remover Técnico
+                  </button>
                 </li>
               ))}
             </ul>

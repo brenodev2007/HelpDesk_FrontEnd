@@ -22,10 +22,8 @@ export default function Login() {
 
       const { token } = response.data;
 
-      // Armazena o token
       localStorage.setItem("token", token);
 
-      // Redireciona para a página inicial com reload
       window.location.href = "/criar-chamado";
     } catch (error) {
       if (axios.isAxiosError(error)) {
