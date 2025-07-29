@@ -6,10 +6,13 @@ import api from "../services/api";
 import styles from "./styles/PaginaTecnico.module.css";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import Select, { StylesConfig, GroupBase } from "react-select";
+
+import clsx from "clsx";
 
 type ChamadoServico = {
   id: string;
-  status: "PENDING" | "IN_PROGRESS" | "DONE";
+  status: StatusType;
   chamado: {
     descricao: string;
     user: {
@@ -23,6 +26,49 @@ type ChamadoServico = {
 };
 
 type StatusType = "PENDING" | "IN_PROGRESS" | "DONE";
+
+type StatusOption = {
+  value: StatusType;
+  label: string;
+  color: string;
+};
+
+const statusOptions: StatusOption[] = [
+  { value: "PENDING", label: "Pendente", color: "#facc15" },
+  { value: "IN_PROGRESS", label: "Em Progresso", color: "#3b82f6" },
+  { value: "DONE", label: "Concluído", color: "#10b981" },
+];
+
+// Tipando customStyles com StylesConfig do react-select
+const customStyles: StylesConfig<
+  StatusOption,
+  false,
+  GroupBase<StatusOption>
+> = {
+  control: (provided) => ({
+    ...provided,
+    borderRadius: "12px",
+    borderColor: "#c3c9f5",
+    boxShadow: "none",
+    minHeight: "40px",
+    fontSize: "1rem",
+    backgroundColor: "#f7f9ff",
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isFocused ? "#e0e7ff" : "#fff",
+    color: "#1e2024",
+    cursor: "pointer",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: "#1e2024",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: "12px",
+  }),
+};
 
 export const PaginaTecnico: React.FC = () => {
   const { user } = useAuth();
@@ -81,16 +127,16 @@ export const PaginaTecnico: React.FC = () => {
     }
   };
 
-  const renderStatusBadge = (status: StatusType) => {
+  const getStatusColor = (status: StatusType) => {
     switch (status) {
       case "PENDING":
-        return <span className={styles.badgePending}>⏳ Pendente</span>;
+        return "#facc15";
       case "IN_PROGRESS":
-        return <span className={styles.badgeInProgress}>🔧 Em Progresso</span>;
+        return "#3b82f6";
       case "DONE":
-        return <span className={styles.badgeDone}>✅ Concluído</span>;
+        return "#10b981";
       default:
-        return null;
+        return "#999";
     }
   };
 
@@ -98,62 +144,68 @@ export const PaginaTecnico: React.FC = () => {
     <div className={styles.container}>
       <Sidebar />
 
-      <main className={styles.mainContent}>
-        <div className={styles.header}>
-          <h1>Área do Técnico</h1>
-          <button className={styles.refreshButton} onClick={fetchChamados}>
-            Atualizar
-          </button>
-        </div>
+      <main className={styles.mainWrapper}>
+        <h1 className={styles.title}>Área do Técnico</h1>
+
+        <button className={styles.refreshButton} onClick={fetchChamados}>
+          Atualizar
+        </button>
 
         {loading && <p>Carregando chamados...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className={styles.errorText}>{error}</p>}
         {!loading && chamados.length === 0 && (
           <p>Nenhum chamado disponível no momento.</p>
         )}
 
-        <ul className={styles.listaChamados}>
-          {chamados.map((chamado, index) => (
-            <motion.li
+        <div className={styles.cardsGrid}>
+          {chamados.map((chamado) => (
+            <motion.div
               key={chamado.id}
-              className={styles.chamadoCard}
+              className={styles.card}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.3 }}
+              transition={{ duration: 0.3 }}
             >
-              <h3>{chamado.servico.nome}</h3>
-              <p>
-                <strong>Descrição:</strong> {chamado.chamado.descricao}
-              </p>
-              <p>
-                <strong>Cliente:</strong>{" "}
+              <h3 className={styles.cardTitle}>{chamado.servico.nome}</h3>
+
+              <p className={styles.cardDesc}>{chamado.chamado.descricao}</p>
+
+              <p className={styles.cardClient}>
+                <strong>Cliente: </strong>
                 {chamado.chamado.user.nome || chamado.chamado.user.email}
               </p>
-              <p>
-                <strong>Status atual:</strong>{" "}
-                {renderStatusBadge(chamado.status)}
-              </p>
-              <div style={{ marginTop: "10px" }}>
-                <label htmlFor={`status-${chamado.id}`}>Alterar status:</label>
-                <select
-                  id={`status-${chamado.id}`}
-                  value={chamado.status}
-                  onChange={(e) =>
-                    atualizarStatus(
-                      chamado.id,
-                      e.target.value.toUpperCase() as StatusType
-                    )
-                  }
-                  className={styles.selectStatus}
-                >
-                  <option value="PENDING">Pendente</option>
-                  <option value="IN_PROGRESS">Em Progresso</option>
-                  <option value="DONE">Concluído</option>
-                </select>
+
+              <div
+                className={clsx(styles.statusBadge)}
+                style={{ backgroundColor: getStatusColor(chamado.status) }}
+              >
+                {statusOptions.find((o) => o.value === chamado.status)?.label}
               </div>
-            </motion.li>
+
+              <div className={styles.selectWrapper}>
+                <label
+                  htmlFor={`status-select-${chamado.id}`}
+                  className={styles.label}
+                >
+                  Alterar status:
+                </label>
+
+                <Select
+                  inputId={`status-select-${chamado.id}`}
+                  options={statusOptions}
+                  value={statusOptions.find((o) => o.value === chamado.status)}
+                  onChange={(selected) => {
+                    if (selected) {
+                      atualizarStatus(chamado.id, selected.value as StatusType);
+                    }
+                  }}
+                  styles={customStyles}
+                  isSearchable={false}
+                />
+              </div>
+            </motion.div>
           ))}
-        </ul>
+        </div>
       </main>
     </div>
   );
