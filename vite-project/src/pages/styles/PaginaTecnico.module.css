@@ -169,6 +169,59 @@
   transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  text-align: left;
+}
+
+.closeButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: #2563eb;
+}
+
+.viewMoreButton {
+  margin-top: 1rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  background-color: #e0e7ff;
+  color: #1e40af;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.viewMoreButton:hover {
+  background-color: #c7d2fe;
+}
+
 .selectWrapper {
   margin-top: auto;
 }

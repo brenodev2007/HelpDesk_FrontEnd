@@ -1,3 +1,4 @@
+// MeusChamados.tsx
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import styles from "./styles/MeusChamados.module.css";
@@ -17,13 +18,8 @@ interface Chamado {
       titulo: string;
     };
   }[];
-  user?: {
-    email: string;
-  };
-  tecnico?: {
-    id: string;
-    email: string;
-  };
+  user?: { email: string };
+  tecnico?: { id: string; email: string };
 }
 
 interface Servico {
@@ -46,25 +42,41 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
   const { user } = useAuth();
   const [servicos, setServicos] = useState<Servico[]>([]);
   const [tecnicos, setTecnicos] = useState<Tecnico[]>([]);
-  const [selectedServicosIds, setSelectedServicosIds] = useState<string[]>([]);
+  const [selectedServicoId, setSelectedServicoId] = useState<string>("");
   const [selectedTecnicoId, setSelectedTecnicoId] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
   const [loadingServicos, setLoadingServicos] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    if (chamado) {
-      const servicosIds = chamado?.chamado_servico?.map((cs) => cs.servico.id);
-      setSelectedServicosIds(servicosIds);
-      setSelectedTecnicoId(chamado.tecnico?.id ?? "");
-    }
+    setSelectedServicoId(
+      chamado.chamado_servico.length > 0
+        ? chamado.chamado_servico[0].servico.id
+        : ""
+    );
+    setSelectedTecnicoId(chamado.tecnico?.id ?? "");
   }, [chamado]);
 
   useEffect(() => {
     const fetchServicos = async () => {
       try {
         const res = await api.get("/clientes/listar-servicos");
-        setServicos(res.data);
+        const todosServicos: Servico[] = res.data;
+
+        // Remover serviços já atribuídos a qualquer chamado
+        const servicosUsados = new Set<string>();
+        const resChamados = await api.get("/clientes/listar-todos-chamados");
+
+        resChamados.data.forEach((chamado: Chamado) => {
+          chamado.chamado_servico.forEach((cs) => {
+            servicosUsados.add(cs.servico.id);
+          });
+        });
+
+        const disponiveis = todosServicos.filter(
+          (servico) => !servicosUsados.has(servico.id)
+        );
+        setServicos(disponiveis);
       } catch {
         toast.error("Erro ao carregar serviços");
       } finally {
@@ -76,7 +88,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
       if (user?.role === "ADMIN") {
         try {
           const res = await api.get("/clientes/listar-tecnicos");
-          if (Array.isArray(res.data)) setTecnicos(res.data);
+          setTecnicos(Array.isArray(res.data) ? res.data : []);
         } catch {
           toast.error("Erro ao carregar técnicos");
         }
@@ -89,34 +101,31 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (user?.role === "ADMIN" && !selectedTecnicoId) {
-      setErrorMsg("Selecione um técnico");
-      return;
-    }
-
-    if (user?.role === "ADMIN" && !selectedTecnicoId) {
-      setErrorMsg("Selecione um técnico");
-      return;
-    }
-
     setErrorMsg("");
-    setLoading(true);
 
+    if (user?.role === "ADMIN" && !selectedTecnicoId) {
+      setErrorMsg("Selecione um técnico");
+      return;
+    }
+
+    if (!selectedServicoId) {
+      setErrorMsg("Selecione um serviço");
+      return;
+    }
+
+    setLoading(true);
     try {
       if (user?.role === "ADMIN") {
         await api.patch("/clientes/atribuir-chamado-tecnico", {
           chamadoId: chamado.id,
           tecnicoId: selectedTecnicoId,
         });
-
-        if (selectedServicosIds.length > 0) {
-          await api.patch("/clientes/adicionar-servico", {
-            chamadoId: chamado.id,
-            servicosIds: [selectedServicosIds[0]],
-          });
-        }
       }
+
+      await api.patch("/clientes/adicionar-servico", {
+        chamadoId: chamado.id,
+        servicosIds: [selectedServicoId],
+      });
 
       toast.success("Chamado processado com sucesso!");
       onSuccess();
@@ -138,14 +147,13 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
         </button>
         <h2>
           {user?.role === "ADMIN" ? "Atribuir Técnico" : "Pegar Chamado"} e
-          Adicionar Serviços
+          Adicionar Serviço
         </h2>
         <p>
           <strong>Descrição:</strong> {chamado.descricao}
         </p>
-
         <form onSubmit={handleSubmit}>
-          <fieldset disabled={loading} aria-disabled={!servicos.length}>
+          <fieldset disabled={loading || chamado.chamado_servico.length > 0}>
             {user?.role === "ADMIN" && (
               <label>
                 Selecione o Técnico:
@@ -164,51 +172,34 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
               </label>
             )}
 
-            <legend>Selecione os serviços:</legend>
-            {loadingServicos ? (
-              <p>Carregando serviços...</p>
-            ) : (
-              (() => {
-                // Verifica se o chamado já possui algum serviço
-                const jaPossuiServico = chamado.chamado_servico.length > 0;
-
-                if (jaPossuiServico) {
-                  return <p>Este chamado já possui um serviço atribuído.</p>;
-                }
-
-                const servicosDisponiveis = servicos.filter(
-                  (servico) =>
-                    !chamado.chamado_servico.some(
-                      (cs) => cs.servico.id === servico.id
-                    )
-                );
-
-                if (servicosDisponiveis.length === 0) {
-                  return <p>Nenhum serviço disponível para atribuir.</p>;
-                }
-
-                return servicosDisponiveis.map((servico) => (
-                  <label key={servico.id} className={styles.switchLabel}>
-                    <input
-                      type="radio"
-                      name="servico"
-                      value={servico.id}
-                      checked={selectedServicosIds.includes(servico.id)}
-                      onChange={() => setSelectedServicosIds([servico.id])}
-                    />
-                    <span className={styles.switchCustom}></span>
-                    {servico.titulo}
-                  </label>
-                ));
-              })()
-            )}
+            <label>
+              Serviço:
+              {loadingServicos ? (
+                <p>Carregando serviços...</p>
+              ) : servicos.length === 0 ? (
+                <p>Nenhum serviço disponível</p>
+              ) : (
+                <select
+                  value={selectedServicoId}
+                  onChange={(e) => setSelectedServicoId(e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="">-- Escolha um serviço --</option>
+                  {servicos.map((servico) => (
+                    <option key={servico.id} value={servico.id}>
+                      {servico.titulo}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </label>
           </fieldset>
 
           {errorMsg && <p className={styles.errorMessage}>{errorMsg}</p>}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || chamado.chamado_servico.length > 0}
             className={styles.actionButton}
           >
             {loading ? "Processando..." : "Confirmar"}
@@ -233,12 +224,11 @@ export const MeusChamados: React.FC = () => {
         user?.role === "ADMIN"
           ? "/clientes/listar-todos-chamados"
           : "/clientes/chamados";
-
-      const response = await api.get(rota);
-      setChamados(response.data);
+      const res = await api.get(rota);
+      setChamados(res.data);
     } catch (error) {
-      console.error("Erro ao buscar chamados:", error);
       toast.error("Erro ao buscar chamados");
+      console.error("Erro ao buscar chamados:", error);
     }
   };
 
@@ -249,8 +239,8 @@ export const MeusChamados: React.FC = () => {
       toast.success("Chamado removido com sucesso!");
       atualizarChamados();
     } catch (error) {
-      console.error("Erro ao remover chamado:", error);
       toast.error("Erro ao remover chamado.");
+      console.error("Erro ao remover chamado:", error);
     } finally {
       setChamadoParaExcluir(null);
     }
@@ -295,7 +285,7 @@ export const MeusChamados: React.FC = () => {
                       : chamado.user?.email ?? "—"}
                   </td>
                   <td>
-                    {chamado?.chamado_servico?.length > 0 ? (
+                    {chamado.chamado_servico.length > 0 ? (
                       chamado.chamado_servico.map((cs) => (
                         <div key={cs.servico.id}>{cs.servico.titulo}</div>
                       ))
@@ -309,11 +299,12 @@ export const MeusChamados: React.FC = () => {
                   <td>
                     <button
                       className={styles.actionButton}
+                      disabled={chamado.chamado_servico.length > 0}
                       onClick={() => setModalChamado(chamado)}
                     >
                       {user?.role === "ADMIN"
-                        ? "Atribuir Técnico / Serviços"
-                        : "Pegar Chamado / Serviços"}
+                        ? "Atribuir Técnico / Serviço"
+                        : "Pegar Chamado / Serviço"}
                     </button>
                     <button
                       className={styles.deleteButton}

@@ -11,22 +11,36 @@ import clsx from "clsx";
 
 import { RefreshCcw, User, BadgeCheck, Loader2, Clock } from "lucide-react";
 
-type ChamadoServico = {
-  id: string;
+type Servico = {
+  titulo: string;
+};
+type ChamadoServicoAPIResponse = {
   status: StatusType;
+  servico: {
+    titulo: string;
+  };
   chamado: {
+    id: string;
     descricao: string;
     user: {
-      email: string;
       nome?: string;
+      email: string;
     };
-  };
-  servico: {
-    nome: string;
   };
 };
 
 type StatusType = "PENDING" | "IN_PROGRESS" | "DONE";
+
+type Chamado = {
+  id: string;
+  descricao: string;
+  status: StatusType;
+  user: {
+    nome?: string;
+    email: string;
+  };
+  servicos: Servico[];
+};
 
 type StatusOption = {
   value: StatusType;
@@ -95,9 +109,10 @@ const customStyles: StylesConfig<
 export const PaginaTecnico: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [chamados, setChamados] = useState<ChamadoServico[]>([]);
+  const [chamados, setChamados] = useState<Chamado[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [modalChamado, setModalChamado] = useState<Chamado | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -115,7 +130,28 @@ export const PaginaTecnico: React.FC = () => {
     try {
       const response = await api.get("clientes/meus-chamados-tecnico");
       const lista = response.data.chamados || [];
-      setChamados(Array.isArray(lista) ? lista : []);
+
+      const chamadosMap = new Map<string, Chamado>();
+
+      (lista as ChamadoServicoAPIResponse[]).forEach((item) => {
+        const chamadoId = item.chamado.id;
+
+        if (!chamadosMap.has(chamadoId)) {
+          chamadosMap.set(chamadoId, {
+            id: chamadoId,
+            descricao: item.chamado.descricao,
+            status: item.status,
+            user: item.chamado.user,
+            servicos: [],
+          });
+        }
+
+        const chamadoExistente = chamadosMap.get(chamadoId);
+        if (chamadoExistente && item.servico) {
+          chamadoExistente.servicos.push({ titulo: item.servico.titulo });
+        }
+      });
+      setChamados(Array.from(chamadosMap.values()));
     } catch (error) {
       console.error("Erro ao buscar chamados:", error);
       setError("Erro ao carregar chamados.");
@@ -124,19 +160,16 @@ export const PaginaTecnico: React.FC = () => {
     }
   };
 
-  const atualizarStatus = async (
-    chamadoServicoId: string,
-    novoStatus: StatusType
-  ) => {
+  const atualizarStatus = async (chamadoId: string, novoStatus: StatusType) => {
     try {
       await api.patch("clientes/editar-status", {
-        chamadoServicoId,
+        chamadoId,
         novoStatus,
       });
 
       setChamados((prev) =>
         prev.map((chamado) =>
-          chamado.id === chamadoServicoId
+          chamado.id === chamadoId
             ? { ...chamado, status: novoStatus }
             : chamado
         )
@@ -156,6 +189,50 @@ export const PaginaTecnico: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      {modalChamado && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setModalChamado(null)}
+        >
+          <motion.div
+            className={styles.modalContent}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Detalhes do Chamado</h2>
+            <p>
+              <strong>Descrição:</strong> {modalChamado.descricao}
+            </p>
+            <p>
+              <strong>Cliente:</strong>{" "}
+              {modalChamado.user.nome || modalChamado.user.email}
+            </p>
+
+            <div style={{ marginTop: "1rem" }}>
+              <strong>Serviços atribuídos:</strong>
+              {modalChamado.servicos.length > 0 ? (
+                <ul>
+                  {modalChamado.servicos.map((servico, index) => (
+                    <li key={index}>🔧 {servico.titulo}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>Nenhum serviço atribuído a este chamado.</p>
+              )}
+            </div>
+
+            <button
+              className={styles.closeButton}
+              onClick={() => setModalChamado(null)}
+            >
+              Fechar
+            </button>
+          </motion.div>
+        </div>
+      )}
+
       <Sidebar />
 
       <main className={styles.mainWrapper}>
@@ -181,12 +258,12 @@ export const PaginaTecnico: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <p className={styles.cardDesc}>{chamado.chamado.descricao}</p>
+              <p className={styles.cardDesc}>{chamado.descricao}</p>
 
               <p className={styles.cardClient}>
                 <User size={16} style={{ marginRight: 4 }} />
                 <strong>Cliente: </strong>{" "}
-                {chamado.chamado.user.nome || chamado.chamado.user.email}
+                {chamado.user.nome || chamado.user.email}
               </p>
 
               <div
@@ -225,6 +302,13 @@ export const PaginaTecnico: React.FC = () => {
                     </div>
                   )}
                 />
+
+                <button
+                  className={styles.viewMoreButton}
+                  onClick={() => setModalChamado(chamado)}
+                >
+                  Ver mais
+                </button>
               </div>
             </motion.div>
           ))}
