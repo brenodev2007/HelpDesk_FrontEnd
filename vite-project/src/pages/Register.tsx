@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../components/Input";
 import { Button } from "../components/Buttom";
 import styles from "./styles/Register.module.css";
@@ -6,8 +6,11 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import api from "../services/api";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Register() {
+  const { user } = useAuth();
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ export default function Register() {
 
       console.log("Cadastro bem-sucedido:", response.data);
 
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const serverMessage =
@@ -39,6 +42,12 @@ export default function Register() {
       }
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      window.location.href = "/home";
+    }
+  }, []);
 
   return (
     <div className={styles.fundo_login}>
@@ -62,7 +71,7 @@ export default function Register() {
           />
           <Button type="submit">Cadastrar</Button>
           <p>
-            Já tem conta? <Link to="/">Faça login</Link>
+            Já tem conta? <Link to="/login">Faça login</Link>
           </p>
         </form>
       </div>

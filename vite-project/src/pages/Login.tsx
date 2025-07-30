@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../components/Input";
 import { Button } from "../components/Buttom";
 import api from "../services/api";
@@ -6,8 +6,11 @@ import axios from "axios";
 import styles from "./styles/Login.module.css";
 import logo from "../assets/logo.svg";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
+  const { user } = useAuth();
+
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
@@ -38,6 +41,12 @@ export default function Login() {
       }
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      window.location.href = "/home";
+    }
+  }, []);
 
   return (
     <div className={styles.fundo_login}>

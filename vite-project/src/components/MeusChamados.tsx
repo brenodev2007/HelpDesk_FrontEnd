@@ -3,6 +3,7 @@ import api from "../services/api";
 import styles from "./styles/MeusChamados.module.css";
 import { useAuth } from "../context/AuthContext";
 import { Sidebar } from "../components/Sidebar";
+import { toast } from "react-toastify";
 
 interface Chamado {
   id: string;
@@ -52,7 +53,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
 
   useEffect(() => {
     if (chamado) {
-      const servicosIds = chamado.chamado_servico.map((cs) => cs.servico.id);
+      const servicosIds = chamado?.chamado_servico?.map((cs) => cs.servico.id);
       setSelectedServicosIds(servicosIds);
       setSelectedTecnicoId(chamado.tecnico?.id ?? "");
     }
@@ -125,12 +126,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
         });
       }
 
-      await api.post("/clientes/adicionar-servicos", {
-        chamadoId: chamado.id,
-        servicosIds: selectedServicosIds,
-      });
-
-      alert("Chamado processado com sucesso!");
+      toast.success("Chamado processado com sucesso!");
       onSuccess();
       onClose();
     } catch {
@@ -156,7 +152,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
         </p>
 
         <form onSubmit={handleSubmit}>
-          <fieldset disabled={loading}>
+          <fieldset disabled={loading} aria-disabled={!servicos.length}>
             {user?.role === "ADMIN" && (
               <label>
                 Selecione o Técnico:
@@ -174,6 +170,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
                 </select>
               </label>
             )}
+            {/* # Adicionar mensagem que não tem serviço */}
 
             <legend>Selecione os serviços:</legend>
             {loadingServicos ? (
@@ -288,7 +285,7 @@ export const MeusChamados: React.FC = () => {
                       : chamado.user?.email ?? "—"}
                   </td>
                   <td>
-                    {chamado.chamado_servico.length > 0 ? (
+                    {chamado?.chamado_servico?.length > 0 ? (
                       chamado.chamado_servico.map((cs) => (
                         <div key={cs.servico.id}>{cs.servico.titulo}</div>
                       ))

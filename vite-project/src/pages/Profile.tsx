@@ -11,7 +11,7 @@ type ProfileModalProps = {
 };
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
   const navigate = useNavigate();
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [novoEmail, setNovoEmail] = useState("");
@@ -33,6 +33,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
       setShowEmailForm(false);
       setNovoEmail("");
       setSenhaAtual("");
+
+      setUser({ ...user, email: novoEmail });
     } catch (error) {
       alert(error);
     }

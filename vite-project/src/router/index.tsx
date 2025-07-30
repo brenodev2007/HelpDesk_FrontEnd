@@ -8,6 +8,7 @@ import { AdminRoute } from "../components/AdminRoute";
 import PainelAdministrador from "../pages/AdminPage";
 import { ProfileModalOverlay } from "../hooks/ProfileModalOverlay";
 import { MeusChamados } from "../components/MeusChamados";
+import { PrivateRoute } from "../components/PrivateRoute";
 
 export default function AppRoutes() {
   const { user, loading } = useAuth();
@@ -18,58 +19,63 @@ export default function AppRoutes() {
 
   return (
     <Routes>
-      {/* Rota raiz - redireciona direto para criar chamado */}
-      <Route path="/" element={<CriarChamado />} />
-
-      {/* Rotas públicas */}
-      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Rota modal: exibida por cima da anterior */}
+      {/* Rota raiz - redireciona direto para criar chamado */}
+      <Route element={<PrivateRoute />}>
+        <Route path="/home" element={<CriarChamado />} />
 
-      <Route path="/profile" element={<ProfileModalOverlay />} />
+        <Route path="/profile" element={<ProfileModalOverlay />} />
 
-      {/* Rotas protegidas comuns para qualquer usuário logado */}
-      <Route
-        path="/meus-chamados"
-        element={user ? <MeusChamados /> : <Navigate to="/login" replace />}
-      />
+        {/* Rotas protegidas comuns para qualquer usuário logado */}
+        <Route
+          path="/meus-chamados"
+          element={user ? <MeusChamados /> : <Navigate to="/login" replace />}
+        />
 
-      <Route
-        path="/criar-chamado"
-        element={
-          user ? (
-            user.role === "TECNICO" ? (
-              <Navigate to="/tecnico" replace />
+        <Route
+          path="/criar-chamado"
+          element={
+            user ? (
+              user.role === "TECNICO" ? (
+                <Navigate to="/tecnico" replace />
+              ) : (
+                <CriarChamado />
+              )
             ) : (
-              <CriarChamado />
+              <Navigate to="/login" replace />
             )
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
+          }
+        />
 
-      {/* Rota para área do técnico - só para role TECNICO */}
-      <Route
-        path="/tecnico"
-        element={
-          user ? (
-            user.role === "TECNICO" ? (
-              <PaginaTecnico />
+        {/* Rota para área do técnico - só para role TECNICO */}
+        <Route
+          path="/tecnico"
+          element={
+            user ? (
+              user.role === "TECNICO" ? (
+                <PaginaTecnico />
+              ) : (
+                <Navigate to="/criar-chamado" replace />
+              )
             ) : (
-              <Navigate to="/criar-chamado" replace />
+              <Navigate to="/login" replace />
             )
-          ) : (
-            <Navigate to="/login" replace />
-          )
-        }
-      />
+          }
+        />
 
-      {/* Rota protegida apenas para ADMIN */}
-      <Route element={<AdminRoute />}>
-        <Route path="/painel-administrador" element={<PainelAdministrador />} />
+        {/* Rota protegida apenas para ADMIN */}
+        <Route element={<AdminRoute />}>
+          <Route
+            path="/painel-administrador"
+            element={<PainelAdministrador />}
+          />
+        </Route>
       </Route>
+      {/* Rotas públicas */}
+
+      {/* Rota modal: exibida por cima da anterior */}
 
       {/* Rota fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
