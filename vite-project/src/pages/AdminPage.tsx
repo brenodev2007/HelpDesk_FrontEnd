@@ -284,8 +284,6 @@ const PainelAdministrador: React.FC = () => {
           </Modal>
         )}
 
-        {/* Modais de listas */}
-
         {/* Clientes - lista melhorada */}
         {showClientesModal && (
           <Modal onClose={() => setShowClientesModal(false)}>

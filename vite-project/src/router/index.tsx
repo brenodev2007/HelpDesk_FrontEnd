@@ -73,9 +73,6 @@ export default function AppRoutes() {
           />
         </Route>
       </Route>
-      {/* Rotas públicas */}
-
-      {/* Rota modal: exibida por cima da anterior */}
 
       {/* Rota fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

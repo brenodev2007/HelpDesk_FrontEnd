@@ -9,7 +9,7 @@ interface Chamado {
   id: string;
   prioridade: string;
   descricao: string;
-  categoria: string; // campo categoria adicionado
+  categoria: string;
   chamado_servico: {
     servico: {
       id: string;
@@ -86,18 +86,6 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
     fetchTecnicos();
   }, [user?.role]);
 
-  const handleCheckboxChange = (id: string) => {
-    // Permitir alteração só se o serviço NÃO estiver atribuído (checkbox habilitado)
-    const isAssigned = chamado.chamado_servico.some(
-      (cs) => cs.servico.id === id
-    );
-    if (isAssigned) return; // bloqueia desmarcar serviços já atribuídos
-
-    setSelectedServicosIds((prev) =>
-      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
-    );
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -120,16 +108,23 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
           chamadoId: chamado.id,
           tecnicoId: selectedTecnicoId,
         });
+
+        await api.patch("/clientes/adicionar-servico", {
+          chamadoId: chamado.id,
+          servicoId: selectedServicosIds[0],
+        });
       } else {
         await api.patch("/clientes/pegar-chamado", {
           chamadoId: chamado.id,
+          servicoId: selectedServicosIds[0],
         });
       }
 
       toast.success("Chamado processado com sucesso!");
       onSuccess();
       onClose();
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Erro ao processar chamado");
     } finally {
       setLoading(false);
@@ -170,25 +165,28 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
                 </select>
               </label>
             )}
-            {/* # Adicionar mensagem que não tem serviço */}
 
             <legend>Selecione os serviços:</legend>
             {loadingServicos ? (
               <p>Carregando serviços...</p>
+            ) : servicos.length === 0 ? (
+              <p>Nenhum serviço encontrado.</p>
             ) : (
               servicos.map((servico) => {
                 const isAssigned = chamado.chamado_servico.some(
                   (cs) => cs.servico.id === servico.id
                 );
                 return (
-                  <label key={servico.id} className={styles.checkboxLabel}>
+                  <label key={servico.id} className={styles.switchLabel}>
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="servico"
                       value={servico.id}
                       checked={selectedServicosIds.includes(servico.id)}
-                      onChange={() => handleCheckboxChange(servico.id)}
-                      disabled={isAssigned} // desabilita checkbox se já atribuído
+                      onChange={() => setSelectedServicosIds([servico.id])}
+                      disabled={isAssigned}
                     />
+                    <span className={styles.switchCustom}></span>
                     {servico.titulo}
                   </label>
                 );
@@ -216,7 +214,7 @@ export const MeusChamados: React.FC = () => {
   const [modalChamado, setModalChamado] = useState<Chamado | null>(null);
   const { user } = useAuth();
 
-  const fetchChamados = async () => {
+  const atualizarChamados = async () => {
     try {
       const rota =
         user?.role === "ADMIN"
@@ -239,7 +237,7 @@ export const MeusChamados: React.FC = () => {
     try {
       await api.delete(`/clientes/remover-chamado/${id}`);
       alert("Chamado removido com sucesso!");
-      fetchChamados();
+      atualizarChamados();
     } catch (error) {
       console.error("Erro ao remover chamado:", error);
       alert("Erro ao remover chamado.");
@@ -247,7 +245,7 @@ export const MeusChamados: React.FC = () => {
   };
 
   useEffect(() => {
-    if (user) fetchChamados();
+    if (user) atualizarChamados();
   }, [user]);
 
   return (
@@ -270,7 +268,7 @@ export const MeusChamados: React.FC = () => {
               <tr>
                 <th>Responsável</th>
                 <th>Serviços Atribuídos</th>
-                <th>Categoria</th> {/* Coluna categoria */}
+                <th>Categoria</th>
                 <th>Prioridade</th>
                 <th>Descrição</th>
                 <th>Ações</th>
@@ -293,7 +291,7 @@ export const MeusChamados: React.FC = () => {
                       <span>—</span>
                     )}
                   </td>
-                  <td>{chamado.categoria}</td> {/* Exibe categoria */}
+                  <td>{chamado.categoria}</td>
                   <td>{chamado.prioridade}</td>
                   <td>{chamado.descricao}</td>
                   <td>
@@ -322,7 +320,7 @@ export const MeusChamados: React.FC = () => {
           <Modal
             chamado={modalChamado}
             onClose={() => setModalChamado(null)}
-            onSuccess={fetchChamados}
+            onSuccess={atualizarChamados}
           />
         )}
       </main>
