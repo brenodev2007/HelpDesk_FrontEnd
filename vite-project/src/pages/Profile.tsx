@@ -5,6 +5,7 @@ import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import styles from "./styles/Profile.module.css";
 import { FiMail, FiLogOut, FiX } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 type ProfileModalProps = {
   onClose: () => void;
@@ -29,14 +30,15 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
       console.log(response.data);
 
-      alert("Email atualizado com sucesso!");
+      toast.success("Email atualizado com sucesso!");
       setShowEmailForm(false);
       setNovoEmail("");
       setSenhaAtual("");
 
       setUser({ ...user, email: novoEmail });
     } catch (error) {
-      alert(error);
+      toast.error("Erro ao atualizar email. Verifique suas credenciais.");
+      console.error("Erro ao atualizar email:", error);
     }
   };
 

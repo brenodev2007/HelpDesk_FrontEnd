@@ -7,6 +7,7 @@ import styles from "./styles/Login.module.css";
 import logo from "../assets/logo.svg";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const { user } = useAuth();
@@ -35,9 +36,10 @@ export default function Login() {
           error.response?.data?.message ||
           error.message ||
           "Erro ao fazer login";
-        alert("Erro: " + message);
+        toast.error(message);
+        console.error("Erro ao fazer login:", message);
       } else {
-        alert("Erro desconhecido ao fazer login");
+        toast.error("Erro desconhecido ao fazer login");
       }
     }
   };

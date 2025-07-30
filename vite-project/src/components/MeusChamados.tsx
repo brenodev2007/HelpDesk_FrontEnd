@@ -90,8 +90,8 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (selectedServicosIds.length === 0) {
-      setErrorMsg("Selecione ao menos um serviço");
+    if (user?.role === "ADMIN" && !selectedTecnicoId) {
+      setErrorMsg("Selecione um técnico");
       return;
     }
 
@@ -110,10 +110,12 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
           tecnicoId: selectedTecnicoId,
         });
 
-        await api.patch("/clientes/adicionar-servico", {
-          chamadoId: chamado.id,
-          servicosIds: [selectedServicosIds[0]],
-        });
+        if (selectedServicosIds.length > 0) {
+          await api.patch("/clientes/adicionar-servico", {
+            chamadoId: chamado.id,
+            servicosIds: [selectedServicosIds[0]],
+          });
+        }
       }
 
       toast.success("Chamado processado com sucesso!");
@@ -165,14 +167,27 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
             <legend>Selecione os serviços:</legend>
             {loadingServicos ? (
               <p>Carregando serviços...</p>
-            ) : servicos.length === 0 ? (
-              <p>Nenhum serviço encontrado.</p>
             ) : (
-              servicos.map((servico) => {
-                const isAssigned = chamado.chamado_servico.some(
-                  (cs) => cs.servico.id === servico.id
+              (() => {
+                // Verifica se o chamado já possui algum serviço
+                const jaPossuiServico = chamado.chamado_servico.length > 0;
+
+                if (jaPossuiServico) {
+                  return <p>Este chamado já possui um serviço atribuído.</p>;
+                }
+
+                const servicosDisponiveis = servicos.filter(
+                  (servico) =>
+                    !chamado.chamado_servico.some(
+                      (cs) => cs.servico.id === servico.id
+                    )
                 );
-                return (
+
+                if (servicosDisponiveis.length === 0) {
+                  return <p>Nenhum serviço disponível para atribuir.</p>;
+                }
+
+                return servicosDisponiveis.map((servico) => (
                   <label key={servico.id} className={styles.switchLabel}>
                     <input
                       type="radio"
@@ -180,13 +195,12 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
                       value={servico.id}
                       checked={selectedServicosIds.includes(servico.id)}
                       onChange={() => setSelectedServicosIds([servico.id])}
-                      disabled={isAssigned}
                     />
                     <span className={styles.switchCustom}></span>
                     {servico.titulo}
                   </label>
-                );
-              })
+                ));
+              })()
             )}
           </fieldset>
 

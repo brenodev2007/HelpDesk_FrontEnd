@@ -7,6 +7,7 @@ import logo from "../assets/logo.svg";
 import api from "../services/api";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const { user } = useAuth();
@@ -36,9 +37,9 @@ export default function Register() {
           error.message ||
           "Erro inesperado.";
 
-        alert("Erro: " + serverMessage);
+        toast.error("Erro: " + serverMessage);
       } else {
-        alert("Erro desconhecido");
+        toast.error("Erro desconhecido");
       }
     }
   };

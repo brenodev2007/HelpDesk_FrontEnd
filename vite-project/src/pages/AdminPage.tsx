@@ -5,6 +5,7 @@ import api from "../services/api";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { FaTrash } from "react-icons/fa";
+import { ConfirmModal } from "../components/ConfirmModal";
 
 type ModalProps = {
   children: ReactNode;
@@ -26,6 +27,11 @@ type Servico = {
     email: string;
     cargo?: string | null;
   };
+};
+
+type ConfirmDelete = {
+  id: string;
+  type: "cliente" | "tecnico" | "servico";
 };
 
 const Modal: React.FC<ModalProps> = ({ children, onClose }) => (
@@ -57,6 +63,9 @@ const PainelAdministrador: React.FC = () => {
   const [showClientesModal, setShowClientesModal] = useState(false);
   const [showServicosModal, setShowServicosModal] = useState(false);
   const [showTecnicosModal, setShowTecnicosModal] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<ConfirmDelete | null>(
+    null
+  );
 
   const [emailTecnico, setEmailTecnico] = useState("");
   const [passwordTecnico, setPasswordTecnico] = useState("");
@@ -84,7 +93,7 @@ const PainelAdministrador: React.FC = () => {
       setCargoTecnico("");
     } catch (error) {
       toast.error("Erro ao criar técnico");
-      console.error(error);
+      console.error("Erro ao criar técnico:", error);
     }
   };
 
@@ -101,7 +110,32 @@ const PainelAdministrador: React.FC = () => {
       setDescricaoServico("");
     } catch (error) {
       toast.error("Erro ao criar serviço");
-      console.error(error);
+      console.error("Erro ao criar serviço:", error);
+    }
+  };
+
+  const removerEntidade = async () => {
+    if (!confirmDelete) return;
+    const { id, type } = confirmDelete;
+    try {
+      if (type === "cliente" || type === "tecnico") {
+        await api.delete("clientes/remover", { data: { id } });
+        if (type === "cliente")
+          setClientes((prev) => prev.filter((c) => c.id !== id));
+        if (type === "tecnico")
+          setTecnicos((prev) => prev.filter((t) => t.id !== id));
+      } else if (type === "servico") {
+        await api.delete(`clientes/remover-servico/${id}`);
+        setServicos((prev) => prev.filter((s) => s.id !== id));
+      }
+      toast.success(
+        `${type.charAt(0).toUpperCase() + type.slice(1)} removido com sucesso`
+      );
+    } catch (error) {
+      toast.error(`Erro ao remover ${type}`);
+      console.error(`Erro ao remover ${type}:`, error);
+    } finally {
+      setConfirmDelete(null);
     }
   };
 
@@ -112,7 +146,7 @@ const PainelAdministrador: React.FC = () => {
       setShowClientesModal(true);
     } catch (error) {
       toast.error("Erro ao buscar clientes");
-      console.error(error);
+      console.error("Erro ao buscar clientes:", error);
     }
   };
 
@@ -123,7 +157,7 @@ const PainelAdministrador: React.FC = () => {
       setShowServicosModal(true);
     } catch (error) {
       toast.error("Erro ao buscar serviços");
-      console.error(error);
+      console.error("Erro ao buscar serviços:", error);
     }
   };
 
@@ -134,43 +168,7 @@ const PainelAdministrador: React.FC = () => {
       setShowTecnicosModal(true);
     } catch (error) {
       toast.error("Erro ao buscar técnicos");
-      console.error(error);
-    }
-  };
-
-  const removerConta = async (id: string) => {
-    if (!confirm("Deseja realmente remover esta conta?")) return;
-    try {
-      await api.delete("clientes/remover", { data: { id } });
-      setClientes((prev) => prev.filter((c) => c.id !== id));
-      toast.success("Conta removida com sucesso");
-    } catch (error) {
-      toast.error("Erro ao remover conta");
-      console.error(error);
-    }
-  };
-
-  const removerServico = async (id: string) => {
-    if (!confirm("Deseja realmente remover este serviço?")) return;
-    try {
-      await api.delete(`clientes/remover-servico/${id}`);
-      setServicos((prev) => prev.filter((s) => s.id !== id));
-      toast.success("Serviço removido com sucesso");
-    } catch (error) {
-      toast.error("Erro ao remover serviço");
-      console.error(error);
-    }
-  };
-
-  const removerTecnico = async (id: string) => {
-    if (!confirm("Deseja realmente remover este técnico?")) return;
-    try {
-      await api.delete("clientes/remover", { data: { id } });
-      setTecnicos((prev) => prev.filter((t) => t.id !== id));
-      toast.success("Técnico removido com sucesso");
-    } catch (error) {
-      toast.error("Erro ao remover técnico");
-      console.error(error);
+      console.error("Erro ao buscar técnicos:", error);
     }
   };
 
@@ -284,7 +282,6 @@ const PainelAdministrador: React.FC = () => {
           </Modal>
         )}
 
-        {/* Clientes - lista melhorada */}
         {showClientesModal && (
           <Modal onClose={() => setShowClientesModal(false)}>
             <h3>Clientes Cadastrados</h3>
@@ -304,11 +301,11 @@ const PainelAdministrador: React.FC = () => {
                   </div>
                   <button
                     className={styles.deleteButton}
-                    onClick={() => removerConta(cliente.id)}
-                    title="Remover Conta"
+                    onClick={() =>
+                      setConfirmDelete({ id: cliente.id, type: "cliente" })
+                    }
                   >
-                    <FaTrash style={{ marginRight: 6 }} />
-                    Remover
+                    <FaTrash style={{ marginRight: 6 }} /> Remover
                   </button>
                 </li>
               ))}
@@ -316,7 +313,6 @@ const PainelAdministrador: React.FC = () => {
           </Modal>
         )}
 
-        {/* Serviços */}
         {showServicosModal && (
           <Modal onClose={() => setShowServicosModal(false)}>
             <h3>Serviços Cadastrados</h3>
@@ -335,27 +331,23 @@ const PainelAdministrador: React.FC = () => {
                     </p>
                     <p>
                       <strong>Técnico:</strong>{" "}
-                      {servico.tecnico.id
-                        ? `${servico.tecnico.email} (${servico.tecnico.id})`
-                        : "Removido"}
+                      {servico.tecnico?.email || "Removido"}
                     </p>
                   </div>
-                  <div className={styles.buttonsGroup}>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={() => removerServico(servico.id)}
-                      title="Remover Serviço"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() =>
+                      setConfirmDelete({ id: servico.id, type: "servico" })
+                    }
+                  >
+                    <FaTrash style={{ marginRight: 6 }} /> Remover
+                  </button>
                 </li>
               ))}
             </ul>
           </Modal>
         )}
 
-        {/* Técnicos */}
         {showTecnicosModal && (
           <Modal onClose={() => setShowTecnicosModal(false)}>
             <h3>Técnicos Cadastrados</h3>
@@ -375,16 +367,25 @@ const PainelAdministrador: React.FC = () => {
                   </div>
                   <button
                     className={styles.deleteButton}
-                    onClick={() => removerTecnico(tecnico.id)}
-                    title="Remover Técnico"
+                    onClick={() =>
+                      setConfirmDelete({ id: tecnico.id, type: "tecnico" })
+                    }
                   >
-                    <FaTrash style={{ marginRight: "6px" }} />
-                    Remover
+                    <FaTrash style={{ marginRight: 6 }} /> Remover
                   </button>
                 </li>
               ))}
             </ul>
           </Modal>
+        )}
+
+        {confirmDelete && (
+          <ConfirmModal
+            title="Confirmar Exclusão"
+            message="Deseja realmente excluir este registro? Essa ação não poderá ser desfeita."
+            onConfirm={removerEntidade}
+            onCancel={() => setConfirmDelete(null)}
+          />
         )}
       </main>
     </div>
