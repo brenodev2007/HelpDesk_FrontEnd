@@ -4,6 +4,7 @@ import styles from "./styles/MeusChamados.module.css";
 import { useAuth } from "../context/AuthContext";
 import { Sidebar } from "../components/Sidebar";
 import { toast } from "react-toastify";
+import { ConfirmModal } from "../components/ConfirmModal";
 
 interface Chamado {
   id: string;
@@ -65,7 +66,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
         const res = await api.get("/clientes/listar-servicos");
         setServicos(res.data);
       } catch {
-        alert("Erro ao carregar serviços");
+        toast.error("Erro ao carregar serviços");
       } finally {
         setLoadingServicos(false);
       }
@@ -77,7 +78,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
           const res = await api.get("/clientes/listar-tecnicos");
           if (Array.isArray(res.data)) setTecnicos(res.data);
         } catch {
-          alert("Erro ao carregar técnicos");
+          toast.error("Erro ao carregar técnicos");
         }
       }
     };
@@ -111,12 +112,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
 
         await api.patch("/clientes/adicionar-servico", {
           chamadoId: chamado.id,
-          servicoId: selectedServicosIds[0],
-        });
-      } else {
-        await api.patch("/clientes/pegar-chamado", {
-          chamadoId: chamado.id,
-          servicoId: selectedServicosIds[0],
+          servicosIds: [selectedServicosIds[0]],
         });
       }
 
@@ -125,7 +121,7 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
       onClose();
     } catch (err) {
       console.error(err);
-      alert("Erro ao processar chamado");
+      toast.error("Erro ao processar chamado");
     } finally {
       setLoading(false);
     }
@@ -212,6 +208,9 @@ const Modal: React.FC<ModalProps> = ({ chamado, onClose, onSuccess }) => {
 export const MeusChamados: React.FC = () => {
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [modalChamado, setModalChamado] = useState<Chamado | null>(null);
+  const [chamadoParaExcluir, setChamadoParaExcluir] = useState<Chamado | null>(
+    null
+  );
   const { user } = useAuth();
 
   const atualizarChamados = async () => {
@@ -225,22 +224,21 @@ export const MeusChamados: React.FC = () => {
       setChamados(response.data);
     } catch (error) {
       console.error("Erro ao buscar chamados:", error);
+      toast.error("Erro ao buscar chamados");
     }
   };
 
-  const handleRemoverChamado = async (id: string) => {
-    const confirmar = window.confirm(
-      "Tem certeza que deseja remover este chamado?"
-    );
-    if (!confirmar) return;
-
+  const confirmarRemocaoChamado = async () => {
+    if (!chamadoParaExcluir) return;
     try {
-      await api.delete(`/clientes/remover-chamado/${id}`);
-      alert("Chamado removido com sucesso!");
+      await api.delete(`/clientes/remover-chamado/${chamadoParaExcluir.id}`);
+      toast.success("Chamado removido com sucesso!");
       atualizarChamados();
     } catch (error) {
       console.error("Erro ao remover chamado:", error);
-      alert("Erro ao remover chamado.");
+      toast.error("Erro ao remover chamado.");
+    } finally {
+      setChamadoParaExcluir(null);
     }
   };
 
@@ -305,7 +303,7 @@ export const MeusChamados: React.FC = () => {
                     </button>
                     <button
                       className={styles.deleteButton}
-                      onClick={() => handleRemoverChamado(chamado.id)}
+                      onClick={() => setChamadoParaExcluir(chamado)}
                     >
                       Remover
                     </button>
@@ -321,6 +319,15 @@ export const MeusChamados: React.FC = () => {
             chamado={modalChamado}
             onClose={() => setModalChamado(null)}
             onSuccess={atualizarChamados}
+          />
+        )}
+
+        {chamadoParaExcluir && (
+          <ConfirmModal
+            title="Confirmar Exclusão"
+            message="Tem certeza que deseja excluir este chamado? Essa ação não poderá ser desfeita."
+            onConfirm={confirmarRemocaoChamado}
+            onCancel={() => setChamadoParaExcluir(null)}
           />
         )}
       </main>
