@@ -1,0 +1,21 @@
+## 💡 Sobre o projeto
+Sistema de gerenciamento instantâneos ,
+utilizado em ambiente real de produção.
+
+## 🛠️ Tecnologias
+- Node.js
+- React
+- PostgreSQL
+- APIs REST
+
+## ⚙️ Funcionalidades
+- Integração com APIs externas
+- Validação de dados financeiros
+- Automação de processos
+- Tratamento de erros e logs
+
+## ▶️ Como rodar o projeto
+1. Clone o repositório
+2. Instale as dependências
+3. Configure o .env
+4. Rode o projeto
